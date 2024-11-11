@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Core", "Charon.Core\Charon.Core.csproj", "{0D1018E1-57C4-479B-ABE6-57EFCA2DCEFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Core.Tests", "Charon.Core.Tests\Charon.Core.Tests.csproj", "{0F1703EF-0697-460D-9570-34F883D5DBFC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Security", "Charon.Security\Charon.Security.csproj", "{4CDEFEC2-1AE2-46CB-B39D-173945A3C76F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Json", "Charon.Json\Charon.Json.csproj", "{4ED8CDBF-8F5F-44AC-89A6-B85FA73409C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Json.Tests", "Charon.Json.Tests\Charon.Json.Tests.csproj", "{861EFC39-6A20-49F8-B31E-611A28ED5D6A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D1018E1-57C4-479B-ABE6-57EFCA2DCEFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D1018E1-57C4-479B-ABE6-57EFCA2DCEFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D1018E1-57C4-479B-ABE6-57EFCA2DCEFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D1018E1-57C4-479B-ABE6-57EFCA2DCEFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F1703EF-0697-460D-9570-34F883D5DBFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F1703EF-0697-460D-9570-34F883D5DBFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F1703EF-0697-460D-9570-34F883D5DBFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F1703EF-0697-460D-9570-34F883D5DBFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CDEFEC2-1AE2-46CB-B39D-173945A3C76F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CDEFEC2-1AE2-46CB-B39D-173945A3C76F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CDEFEC2-1AE2-46CB-B39D-173945A3C76F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CDEFEC2-1AE2-46CB-B39D-173945A3C76F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ED8CDBF-8F5F-44AC-89A6-B85FA73409C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ED8CDBF-8F5F-44AC-89A6-B85FA73409C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ED8CDBF-8F5F-44AC-89A6-B85FA73409C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ED8CDBF-8F5F-44AC-89A6-B85FA73409C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
