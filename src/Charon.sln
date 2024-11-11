@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Json", "Charon.Json\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Json.Tests", "Charon.Json.Tests\Charon.Json.Tests.csproj", "{861EFC39-6A20-49F8-B31E-611A28ED5D6A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Web", "Charon.Web\Charon.Web.csproj", "{89C7DB98-C1D8-441D-9492-4CA1A66C78D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Server", "Charon.Server\Charon.Server.csproj", "{C1C60032-6E61-4B24-8916-63C56284C2A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +46,13 @@ Global
 		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{861EFC39-6A20-49F8-B31E-611A28ED5D6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89C7DB98-C1D8-441D-9492-4CA1A66C78D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89C7DB98-C1D8-441D-9492-4CA1A66C78D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89C7DB98-C1D8-441D-9492-4CA1A66C78D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89C7DB98-C1D8-441D-9492-4CA1A66C78D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1C60032-6E61-4B24-8916-63C56284C2A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1C60032-6E61-4B24-8916-63C56284C2A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1C60032-6E61-4B24-8916-63C56284C2A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1C60032-6E61-4B24-8916-63C56284C2A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
