@@ -5,6 +5,28 @@ namespace Charon.Json.Tests;
 public sealed class ObjectListJsonConverterTests
 {
     [Fact]
+    public void WriteNull()
+    {
+        var sourceObject = new Foo
+        {
+            Hint = "test hint"
+        };
+
+        var json = JsonSerializer.Serialize(sourceObject, sourceObject.GetType());
+        Assert.Equal("{\"Hint\":\"test hint\",\"Bars\":null}", json);
+    }
+
+    [Fact]
+    public void ReadNull()
+    {
+        var json = "{\"Hint\":\"test hint\",\"Bars\":null}";
+        var actual = JsonSerializer.Deserialize<Foo>(json);
+
+        Assert.NotNull(actual);
+        Assert.Null(actual.Bars);
+    }
+
+    [Fact]
     public void WriteSingle()
     {
         var sourceObject = new Foo

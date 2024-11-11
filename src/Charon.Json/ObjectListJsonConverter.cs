@@ -17,7 +17,7 @@ namespace Charon.Json
                 if (item == null)
                     return default;
 
-                return new() { item };
+                return [item];
             }
         }
 
