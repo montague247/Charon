@@ -1,3 +1,4 @@
+localenv-*.json
 **/bin
 **/obj
 **/*.user

@@ -1,0 +1,52 @@
+namespace Charon.Dojo.Code
+{
+    public sealed class CodeWriter
+    {
+        private readonly CodeFileArguments _arguments;
+        private ClassBuilder? _classBuilder;
+
+        public CodeWriter(Action<CodeFileDescriptor> descriptor)
+        {
+            _arguments = new();
+            descriptor(new CodeFileDescriptor(out _arguments));
+        }
+
+        public ClassBuilder Class(string name, Action<ClassDescriptor> descriptor)
+        {
+            descriptor(new ClassDescriptor(name, _arguments, out ClassArguments classArguments));
+
+            _classBuilder = new ClassBuilder(this, _arguments, classArguments);
+
+            return _classBuilder;
+        }
+
+        public string Build()
+        {
+            if (_arguments.Usings == null)
+                throw new ArgumentNullException(nameof(_arguments.Usings));
+
+            _arguments.Usings.Remove(_arguments.NamespaceName!);
+
+            var writer = new IndentedWriter();
+
+            foreach (var name in _arguments.Usings.OrderBy(s => s))
+            {
+                writer.WriteLine($"using {name};");
+            }
+
+            if (_arguments.Usings.Count > 0)
+                writer.NewLine();
+
+            writer.WriteLine($"namespace {_arguments.NamespaceName}");
+            writer.WriteLine("{");
+            writer.Indent();
+
+            _classBuilder?.Build(writer);
+
+            writer.Unindent();
+            writer.WriteLine("}");
+
+            return writer.Text;
+        }
+    }
+}
