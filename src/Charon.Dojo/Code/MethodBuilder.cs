@@ -30,6 +30,22 @@ namespace Charon.Dojo.Code
 
             sb.Append(' ').Append(_arguments.Name);
             sb.Append('(');
+
+            if (_arguments.Arguments != null)
+            {
+                var first = true;
+
+                foreach (var argument in _arguments.Arguments)
+                {
+                    if (first)
+                        first = false;
+                    else
+                        sb.Append(", ");
+
+                    sb.Append(argument.Type).Append(' ').Append(argument.Name);
+                }
+            }
+
             sb.Append(')');
 
             return sb.ToString();

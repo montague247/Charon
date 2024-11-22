@@ -6,33 +6,106 @@ namespace Charon.Dojo.Code
     {
         private readonly ClassArguments _arguments = arguments;
         private bool _empty;
+        private List<AttributeBuilder>? _attributeBuilders;
+        private List<PropertyBuilder>? _propertyBuilders;
         private List<MethodBuilder>? _methodBuilders;
+
+        public ClassBuilder Attribute<T>(Action<AttributeDescriptor>? descriptor = null)
+            where T : Attribute
+        {
+            var attributeDescriptor = new AttributeDescriptor(Arguments, out AttributeArguments arguments)
+                                    .Type<T>();
+
+            return Attribute(descriptor, attributeDescriptor, arguments);
+        }
+
+        public ClassBuilder Property<T>(string name, Action<PropertyDescriptor> descriptor)
+        {
+            var propertyDescriptor = new PropertyDescriptor(name, Arguments, out PropertyArguments arguments)
+                                    .ReturnType<T>();
+
+            return Property(descriptor, propertyDescriptor, arguments);
+        }
 
         public ClassBuilder Method(string name, Action<MethodDescriptor> descriptor, Action<CodeBuilder> code)
         {
-            descriptor(new MethodDescriptor(name, Arguments, out MethodArguments methodsArguments));
+            var methodDescriptor = new MethodDescriptor(name, Arguments, out MethodArguments arguments);
 
-            var codeBuilder = new CodeBuilder(this);
-            code(codeBuilder);
+            return Method(descriptor, methodDescriptor, code, arguments);
+        }
 
-            _methodBuilders ??= [];
-            _methodBuilders.Add(new MethodBuilder(this, methodsArguments, codeBuilder));
+        public ClassBuilder Method<T>(string name, Action<MethodDescriptor> descriptor, Action<CodeBuilder> code)
+        {
+            var methodDescriptor = new MethodDescriptor(name, Arguments, out MethodArguments arguments)
+                                    .ReturnType<T>();
 
-            return this;
+            return Method(descriptor, methodDescriptor, code, arguments);
         }
 
         public override void Build(IndentedWriter writer)
         {
+            BuildAttributes(writer);
             writer.WriteLine(BuildClass());
             writer.WriteLine("{");
             writer.Indent();
 
             _empty = true;
 
+            BuildProperties(writer);
             BuildMethods(writer);
 
             writer.Unindent();
             writer.WriteLine("}");
+        }
+
+        private ClassBuilder Attribute(Action<AttributeDescriptor>? descriptor, AttributeDescriptor defaultDescriptor, AttributeArguments arguments)
+        {
+            descriptor?.Invoke(defaultDescriptor);
+
+            _attributeBuilders ??= [];
+            _attributeBuilders.Add(new AttributeBuilder(this, arguments));
+
+            return this;
+        }
+
+        private ClassBuilder Property(Action<PropertyDescriptor> descriptor, PropertyDescriptor defaultDescriptor, PropertyArguments arguments)
+        {
+            descriptor(defaultDescriptor);
+
+            _propertyBuilders ??= [];
+            _propertyBuilders.Add(new PropertyBuilder(this, arguments));
+
+            return this;
+        }
+
+        private ClassBuilder Method(Action<MethodDescriptor> descriptor, MethodDescriptor defaultDescriptor, Action<CodeBuilder> code, MethodArguments arguments)
+        {
+            descriptor(defaultDescriptor);
+
+            var codeBuilder = new CodeBuilder(this);
+            code(codeBuilder);
+
+            _methodBuilders ??= [];
+            _methodBuilders.Add(new MethodBuilder(this, arguments, codeBuilder));
+
+            return this;
+        }
+
+        private void BuildProperties(IndentedWriter writer)
+        {
+            if (_propertyBuilders == null ||
+                _propertyBuilders.Count == 0)
+                return;
+
+            foreach (var builder in _propertyBuilders)
+            {
+                if (_empty)
+                    _empty = false;
+                else
+                    writer.NewLine();
+
+                builder.Build(writer);
+            }
         }
 
         private void BuildMethods(IndentedWriter writer)
@@ -68,6 +141,18 @@ namespace Charon.Dojo.Code
                 BuildInherit(sb);
 
             return sb.ToString();
+        }
+
+        private void BuildAttributes(IndentedWriter writer)
+        {
+            if (_attributeBuilders == null ||
+                _attributeBuilders.Count == 0)
+                return;
+
+            foreach (var builder in _attributeBuilders)
+            {
+                builder.Build(writer);
+            }
         }
 
         private void BuildInherit(StringBuilder sb)

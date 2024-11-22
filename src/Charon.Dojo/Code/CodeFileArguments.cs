@@ -1,3 +1,5 @@
+using Serilog;
+
 namespace Charon.Dojo.Code
 {
     public sealed class CodeFileArguments
@@ -10,10 +12,13 @@ namespace Charon.Dojo.Code
 
         public void AddUsing(string name)
         {
+            TypeName.AddNamespace(name);
+
+            if (string.Compare(name, "System", StringComparison.Ordinal) == 0)
+                return;
+
             Usings ??= [];
             Usings.Add(name);
-
-            TypeName.AddNamespace(name);
         }
     }
 }

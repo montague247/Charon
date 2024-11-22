@@ -39,7 +39,8 @@ namespace Charon.Dojo.Code
 
         public ClassDescriptor Inherit(Type type)
         {
-            _codeFileArguments.AddUsing(type.Namespace!);
+            if (!TypeName.IsSimple(type))
+                _codeFileArguments.AddUsing(type.Namespace!);
 
             _arguments.Inherits ??= [];
             _arguments.Inherits.Add(new TypeBlock(_codeFileArguments.TypeName, type));

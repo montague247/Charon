@@ -18,9 +18,15 @@ namespace Charon.Core.Tests
             Assert.Equal("decimal", TypeName.Instance.GetName(typeof(decimal)));
             Assert.Equal("decimal?", TypeName.Instance.GetName(typeof(decimal?)));
             Assert.Equal("decimal[]", TypeName.Instance.GetName(typeof(decimal[])));
+            Assert.Equal("decimal?[]", TypeName.Instance.GetName(typeof(decimal?[])));
             Assert.Equal("bool", TypeName.Instance.GetName(typeof(bool)));
             Assert.Equal("bool?", TypeName.Instance.GetName(typeof(bool?)));
             Assert.Equal("bool[]", TypeName.Instance.GetName(typeof(bool[])));
+            Assert.Equal("bool?[]", TypeName.Instance.GetName(typeof(bool?[])));
+            Assert.Equal("byte", TypeName.Instance.GetName(typeof(byte)));
+            Assert.Equal("byte?", TypeName.Instance.GetName(typeof(byte?)));
+            Assert.Equal("byte[]", TypeName.Instance.GetName(typeof(byte[])));
+            Assert.Equal("byte?[]", TypeName.Instance.GetName(typeof(byte?[])));
 
             // let's test the cache
             Assert.Equal("string", TypeName.Instance.GetName(typeof(string)));
@@ -37,6 +43,33 @@ namespace Charon.Core.Tests
             Assert.Equal("bool", TypeName.Instance.GetName(typeof(bool)));
             Assert.Equal("bool?", TypeName.Instance.GetName(typeof(bool?)));
             Assert.Equal("bool[]", TypeName.Instance.GetName(typeof(bool[])));
+        }
+
+        [Fact]
+        public void IsSimple()
+        {
+            Assert.True(TypeName.IsSimple<string>());
+            Assert.True(TypeName.IsSimple<string[]>());
+            Assert.True(TypeName.IsSimple<int>());
+            Assert.True(TypeName.IsSimple<int?>());
+            Assert.True(TypeName.IsSimple<int[]>());
+            Assert.True(TypeName.IsSimple<int?[]>());
+            Assert.True(TypeName.IsSimple<long>());
+            Assert.True(TypeName.IsSimple<long?>());
+            Assert.True(TypeName.IsSimple<long[]>());
+            Assert.True(TypeName.IsSimple<long?[]>());
+            Assert.True(TypeName.IsSimple<decimal>());
+            Assert.True(TypeName.IsSimple<decimal?>());
+            Assert.True(TypeName.IsSimple<decimal[]>());
+            Assert.True(TypeName.IsSimple<decimal?[]>());
+            Assert.True(TypeName.IsSimple<bool>());
+            Assert.True(TypeName.IsSimple<bool?>());
+            Assert.True(TypeName.IsSimple<bool[]>());
+            Assert.True(TypeName.IsSimple<bool?[]>());
+            Assert.False(TypeName.IsSimple<TypeNameTests>());
+            Assert.False(TypeName.IsSimple<TypeNameTests?>());
+            Assert.False(TypeName.IsSimple<TypeNameTests[]>());
+            Assert.False(TypeName.IsSimple<TypeNameTests?[]>());
         }
 
         [Fact]

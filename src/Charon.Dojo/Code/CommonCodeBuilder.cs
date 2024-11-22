@@ -23,6 +23,8 @@ namespace Charon.Dojo.Code
 
         public abstract void Build(IndentedWriter writer);
 
+        public void ToFile(string path, CancellationToken cancellationToken) => _writer.ToFile(path, cancellationToken);
+
         public TypeBlock GetName<T>()
         {
             return GetName(typeof(T));
@@ -30,7 +32,8 @@ namespace Charon.Dojo.Code
 
         public TypeBlock GetName(Type type)
         {
-            _arguments.AddUsing(type.Namespace!);
+            if (!TypeName.IsSimple(type))
+                _arguments.AddUsing(type.Namespace!);
 
             return new TypeBlock(_arguments.TypeName, type);
         }

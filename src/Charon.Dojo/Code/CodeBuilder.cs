@@ -51,6 +51,7 @@ namespace Charon.Dojo.Code
             {
                 var extParts = new object[parts.Length + 1];
                 Array.Copy(parts, 0, extParts, 1, parts.Length);
+                extParts[0] = string.Empty.PadRight(_level * 4);
 
                 _lines.Add(extParts);
             }
@@ -58,6 +59,26 @@ namespace Charon.Dojo.Code
                 _lines.Add(parts);
 
             return this;
+        }
+
+        public CodeBuilder StartBlock()
+        {
+            return WriteLine("{").Indent();
+        }
+
+        public CodeBuilder EndBlock(char? ending = null)
+        {
+            return Unindent().WriteLine($"}}{ending}");
+        }
+
+        public CodeBuilder StartSwitch(string prefix, string name)
+        {
+            return WriteLine(prefix, ' ', name, " switch").StartBlock();
+        }
+
+        public CodeBuilder EndSwitch()
+        {
+            return EndBlock(';');
         }
 
         public override void Build(IndentedWriter writer)

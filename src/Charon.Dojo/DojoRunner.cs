@@ -47,7 +47,30 @@ namespace Charon.Dojo
 
         private static void ProcessAssemblyAttributes(Assembly assembly)
         {
+            ProcessAssemblyAttributes(assembly, assembly.GetCustomAttributes<AssemblySecurityDojoAttribute>());
             ProcessAssemblyAttributes(assembly, assembly.GetCustomAttributes<AssemblyNamespaceDojoAttribute>());
+        }
+
+        private static void ProcessAssemblyAttributes(Assembly assembly, IEnumerable<AssemblySecurityDojoAttribute> attributes)
+        {
+            if (!attributes.Any())
+                return;
+
+            var count = attributes.Count();
+            var name = attributes.First().GetType().Name;
+
+            Log.Information($"Process {{Count}} {{Name}}{Plural(count)}...", name, count);
+
+            var current = 0;
+
+            foreach (var attribute in attributes)
+            {
+                attribute.EnsureNamespace(assembly);
+
+                Log.Information("[{Current}/{Count}] Process namespace '{Name}'...", ++current, count, attribute.Namespace);
+
+                attribute.Process();
+            }
         }
 
         private static void ProcessAssemblyAttributes(Assembly assembly, IEnumerable<AssemblyNamespaceDojoAttribute> attributes)
@@ -67,7 +90,7 @@ namespace Charon.Dojo
                 Log.Information("[{Current}/{Count}] Process namespace '{Name}'...", ++current, count, attribute.Namespace);
 
                 attribute.Process(assembly);
-           }
+            }
         }
 
         private static string? Plural(int count)
@@ -84,8 +107,7 @@ namespace Charon.Dojo
                     name.StartsWith("Newtonsoft", StringComparison.Ordinal) ||
                     name.StartsWith("Serilog", StringComparison.Ordinal) ||
                     name.StartsWith("System", StringComparison.Ordinal) ||
-                    name.StartsWith("xunit", StringComparison.Ordinal) ||
-                    name.EndsWith(".Tests", StringComparison.Ordinal);
+                    name.StartsWith("xunit", StringComparison.Ordinal);
         }
     }
 }

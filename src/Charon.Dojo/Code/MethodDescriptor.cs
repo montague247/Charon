@@ -25,9 +25,26 @@ namespace Charon.Dojo.Code
 
         public MethodDescriptor ReturnType(Type type)
         {
-            _codeFileArguments.AddUsing(type.Namespace!);
+            if (!TypeName.IsSimple(type))
+                _codeFileArguments.AddUsing(type.Namespace!);
 
             _arguments.ReturnType = new TypeBlock(_codeFileArguments.TypeName, type);
+
+            return this;
+        }
+
+        public MethodDescriptor Argument<T>(string name)
+        {
+            return Argument(name, typeof(T));
+        }
+
+        public MethodDescriptor Argument(string name, Type type)
+        {
+            if (!TypeName.IsSimple(type))
+                _codeFileArguments.AddUsing(type.Namespace!);
+
+            _arguments.Arguments ??= [];
+            _arguments.Arguments.Add(new(name) { Type = new TypeBlock(_codeFileArguments.TypeName, type) });
 
             return this;
         }

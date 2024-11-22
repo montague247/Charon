@@ -7,5 +7,7 @@ namespace Charon.Dojo.Code
         public Accessibility Accessibility { get; set; } = Accessibility.Private;
 
         public TypeBlock? ReturnType { get; set; }
+
+        public List<ArgumentArguments>? Arguments { get; set; }
     }
 }

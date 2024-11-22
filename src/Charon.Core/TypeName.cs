@@ -5,16 +5,17 @@ namespace Charon
     public sealed class TypeName
     {
         private static TypeName? _instance;
-        private readonly HashSet<string> _namespaces = [];
-        private readonly Dictionary<Type, string> _cachedNames = [];
-        private readonly Dictionary<Type, string> _simpleTypes = new()
+        private static readonly Dictionary<Type, string> _simpleTypes = new()
         {
             { typeof(string), "string" },
             { typeof(int), "int" },
             { typeof(long), "long" },
             { typeof(decimal), "decimal" },
-            { typeof(bool), "bool" }
+            { typeof(bool), "bool" },
+            { typeof(byte), "byte" }
         };
+        private readonly HashSet<string> _namespaces = [];
+        private readonly Dictionary<Type, string> _cachedNames = [];
 
         public TypeName(params string[] namespaces)
         {
@@ -40,6 +41,26 @@ namespace Charon
             {
                 return _namespaces.OrderBy(s => s);
             }
+        }
+
+        public static bool IsSimple<T>()
+        {
+            return IsSimple(typeof(T));
+        }
+
+        public static bool IsSimple(Type type)
+        {
+            if (_simpleTypes.ContainsKey(type))
+                return true;
+
+            if (type.IsArray)
+                return IsSimple(type.GetElementType()!);
+
+            if (type.IsGenericType &&
+                type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return IsSimple(type.GetGenericArguments()[0]);
+
+            return false;
         }
 
         public bool AddNamespace(string name)

@@ -1,3 +1,5 @@
+using Charon.IO;
+
 namespace Charon.Dojo.Code
 {
     public sealed class CodeWriter
@@ -27,7 +29,7 @@ namespace Charon.Dojo.Code
 
             _arguments.Usings.Remove(_arguments.NamespaceName!);
 
-            var writer = new IndentedWriter();
+            using var writer = new IndentedWriter();
 
             foreach (var name in _arguments.Usings.OrderBy(s => s))
             {
@@ -47,6 +49,17 @@ namespace Charon.Dojo.Code
             writer.WriteLine("}");
 
             return writer.Text;
+        }
+
+        public void ToFile(string path, CancellationToken cancellationToken)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+            var tempPath = string.Concat(path, ".temp");
+
+            File.WriteAllText(tempPath, Build());
+
+            FileComparer.Move(tempPath, path, cancellationToken);
         }
     }
 }
