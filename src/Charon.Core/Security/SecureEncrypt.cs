@@ -22,7 +22,7 @@ namespace Charon.Security
 
         public static IPublicKeyRetriever? PublicKeyRetriever { get; set; }
 
-        public static bool IsEncrypted(this string value)
+        public static bool IsEncrypted(this string? value)
         {
             return !string.IsNullOrEmpty(value) &&
                     (
@@ -32,7 +32,7 @@ namespace Charon.Security
                     );
         }
 
-        public static bool IsSecureEncrypted(this string value)
+        public static bool IsSecureEncrypted(this string? value)
         {
             return !string.IsNullOrEmpty(value) &&
                 value.StartsWith(SecurePrefix, StringComparison.Ordinal);
@@ -190,10 +190,7 @@ namespace Charon.Security
             {
                 crypto.ImportCspBlob(key);
 
-                var salt = new byte[SaltLength];
-
-                RandomNumberGenerator.Fill(salt);
-
+                var salt = SecurityExtensions.CreateRandom(SaltLength);
                 var salted = new List<byte>(salt);
                 var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName).GetBytes(DerivedBytesLength);
 

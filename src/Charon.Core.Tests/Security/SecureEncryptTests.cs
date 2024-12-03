@@ -96,10 +96,7 @@ namespace Charon.Core.Tests.Security
             using var crypto = new RSACryptoServiceProvider(1024);
             crypto.ImportCspBlob(key);
 
-            var salt = new byte[30];
-
-            RandomNumberGenerator.Fill(salt);
-
+            var salt = SecurityExtensions.CreateRandom(30);
             var salted = new List<byte>(salt);
 #pragma warning disable SYSLIB0041 // Typ oder Element ist veraltet
             var derivedBytes = new Rfc2898DeriveBytes(Encoding.UTF8.GetString(salt), salt, 50000).GetBytes(128);

@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using Charon.Security;
-using Charon.Types;
 
 namespace Charon
 {
@@ -10,15 +9,15 @@ namespace Charon
         public static string? Encrypt(this string? value, string? stage = null)
         {
             if (value == null)
-                return default;
+                return value;
 
             return SecureEncrypt.Encrypt(value, stage);
         }
 
         public static string? Decrypt(this string? value)
         {
-            if (value == null)
-                return default;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return SecureEncrypt.Decrypt(value);
         }
@@ -48,11 +47,11 @@ namespace Charon
             return value.Encrypt()!.Veil(secret.SecureHash());
         }
 
-        public static byte[]? Secure(this byte[] bytes)
+        public static byte[]? Secure(this byte[]? bytes)
         {
             if (bytes == null ||
                 bytes.Length == 0)
-                return default;
+                return bytes;
             if (bytes.Length % 2 != 0)
                 throw new ArgumentException($"Length of byte array must be even");
 
@@ -68,13 +67,11 @@ namespace Charon
             return Secure(hash, salt);
         }
 
-        public static byte[]? Secure(this byte[] hash, byte[] salt)
+        public static byte[] Secure(this byte[] hash, byte[] salt)
         {
-            if (hash == null ||
-                hash.Length == 0 ||
-                salt == null ||
+            if (hash.Length == 0 ||
                 salt.Length == 0)
-                return default;
+                return hash;
 
             var derivedBytes = new Rfc2898DeriveBytes(hash.SecureHash().Veil(salt), salt, 50000, HashAlgorithmName.SHA512).GetBytes(128);
 
@@ -83,32 +80,32 @@ namespace Charon
 
         public static string? Unsecure(this string? value, byte[] secureHash)
         {
-            if (value == null)
-                return default;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return value.Unveil(secureHash).Decrypt();
         }
 
         public static string? Unsecure(this string? value, string secret)
         {
-            if (value == null)
-                return default;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return value.Unveil(secret.SecureHash()).Decrypt();
         }
 
         public static string? Veil(this string? value, byte[] secureHash)
         {
-            if (value == null)
-                return default;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return Convert.ToBase64String(Veil(Encoding.UTF8.GetBytes(value), secureHash, false));
         }
 
         public static string? Veil(this string? value, string secret)
         {
-            if (value == null)
-                return default;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return Veil(value, SecureHash(secret));
         }
