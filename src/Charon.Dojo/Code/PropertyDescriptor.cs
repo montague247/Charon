@@ -33,6 +33,13 @@ namespace Charon.Dojo.Code
             return this;
         }
 
+        public PropertyDescriptor Getter(bool getter)
+        {
+            _arguments.Getter = getter;
+
+            return this;
+        }
+
         public PropertyDescriptor Setter(bool setter)
         {
             _arguments.Setter = setter;

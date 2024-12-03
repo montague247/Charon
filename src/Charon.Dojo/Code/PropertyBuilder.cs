@@ -21,14 +21,19 @@ namespace Charon.Dojo.Code
                 sb.Append(' ').Append(_arguments.ReturnType.ToString());
 
             sb.Append(' ').Append(_arguments.Name);
-            sb.Append(" {");
-            sb.Append(" get;");
-            if (_arguments.Setter)
-                sb.Append(" set;");
-            sb.Append(" }");
+            if (_arguments.Getter)
+            {
+                sb.Append(" {");
+                sb.Append(" get;");
+                if (_arguments.Setter)
+                    sb.Append(" set;");
+                sb.Append(" }");
 
-            if (_arguments.Initial != null)
-                sb.Append(" = ").Append(_arguments.Initial).Append(';');
+                if (_arguments.Initial != null)
+                    sb.Append(" = ").Append(_arguments.Initial).Append(';');
+            }
+            else if (_arguments.Initial != null)
+                sb.Append(" => ").Append(_arguments.Initial ?? "null").Append(';');
 
             return sb.ToString();
         }

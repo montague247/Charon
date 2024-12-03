@@ -5,4 +5,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Charon</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="4.1.0" />
+  </ItemGroup>
 </Project>

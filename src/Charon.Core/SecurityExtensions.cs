@@ -1,11 +1,28 @@
 using System.Security.Cryptography;
 using System.Text;
 using Charon.Security;
+using Charon.Types;
 
 namespace Charon
 {
     public static class SecurityExtensions
     {
+        public static string? Encrypt(this string? value, string? stage = null)
+        {
+            if (value == null)
+                return default;
+
+            return SecureEncrypt.Encrypt(value, stage);
+        }
+
+        public static string? Decrypt(this string? value)
+        {
+            if (value == null)
+                return default;
+
+            return SecureEncrypt.Decrypt(value);
+        }
+
         public static byte[] CreateRandom(int length = 256)
         {
             var bytes = new byte[length];
@@ -29,6 +46,39 @@ namespace Charon
                 return default;
 
             return value.Encrypt()!.Veil(secret.SecureHash());
+        }
+
+        public static byte[]? Secure(this byte[] bytes)
+        {
+            if (bytes == null ||
+                bytes.Length == 0)
+                return default;
+            if (bytes.Length % 2 != 0)
+                throw new ArgumentException($"Length of byte array must be even");
+
+            var length = bytes.Length / 2;
+            var salt = new byte[length];
+
+            Buffer.BlockCopy(bytes, 0, salt, 0, length);
+
+            var hash = new byte[length];
+
+            Buffer.BlockCopy(bytes, length, hash, 0, length);
+
+            return Secure(hash, salt);
+        }
+
+        public static byte[]? Secure(this byte[] hash, byte[] salt)
+        {
+            if (hash == null ||
+                hash.Length == 0 ||
+                salt == null ||
+                salt.Length == 0)
+                return default;
+
+            var derivedBytes = new Rfc2898DeriveBytes(hash.SecureHash().Veil(salt), salt, 50000, HashAlgorithmName.SHA512).GetBytes(128);
+
+            return derivedBytes.Veil(salt);
         }
 
         public static string? Unsecure(this string? value, byte[] secureHash)

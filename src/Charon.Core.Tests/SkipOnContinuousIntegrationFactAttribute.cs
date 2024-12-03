@@ -5,11 +5,14 @@ namespace Charon.Core.Tests
         public SkipOnContinuousIntegrationFactAttribute()
         {
 #if DEBUG
-            if (!System.Diagnostics.Debugger.IsAttached)
+            if (CheckAttachedDebugger &&
+                !System.Diagnostics.Debugger.IsAttached)
                 Skip = "No debugger attached";
 #else
             Skip = "Skip on CI pipeline";
 #endif
         }
+
+        public bool CheckAttachedDebugger { get; set; } = true;
     }
 }

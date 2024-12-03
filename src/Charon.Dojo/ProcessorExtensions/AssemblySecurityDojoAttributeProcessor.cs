@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Globalization;
 using System.Security.Cryptography;
 using Charon.Dojo.Code;
 using Charon.Dojo.Security;
@@ -42,6 +44,18 @@ namespace Charon.Dojo.ProcessorExtensions
 
                 stagePrivateKeys.Add(stage, cryptoServiceProvider.ExportCspBlob(true));
                 configuration.SetStage(stage, cryptoServiceProvider.ExportCspBlob(false));
+
+#if false
+                cryptoServiceProvider = new RSACryptoServiceProvider(attribute.KeySize);
+                var bytes = cryptoServiceProvider.ExportCspBlob(true);
+                var str = string.Join(',', bytes);
+                Debug.WriteLine(str);
+                Debug.WriteLine("");
+
+                bytes = cryptoServiceProvider.ExportCspBlob(false);
+                str = string.Join(',', bytes);
+                Debug.WriteLine(str);
+#endif
             }
 
             configuration.Save(path, default);
@@ -71,10 +85,9 @@ namespace Charon.Dojo.ProcessorExtensions
                     .Attribute<PriorityAttribute>(s => s
                         .Argument(attribute.Priority)
                     )
-                    .Property<string>("DefaultStage", s => s.Setter(false).Initial(defaultStage.ToEscapedString()))
                     .Method<byte[]>("GetKey", s => s.Accessibility(Accessibility.Public), code =>
                     {
-                        code.WriteLine($"return [{string.Join(", ", privateKey.Veil(privateHash))}];");
+                        code.WriteLine($"return [{string.Join(", ", privateKey.Veil(privateHash.Secure()!))}];");
                     })
                     .Method<byte[]>("GetHash", s => s.Accessibility(Accessibility.Public), code =>
                     {
@@ -92,6 +105,7 @@ namespace Charon.Dojo.ProcessorExtensions
                     .Attribute<PriorityAttribute>(s => s
                         .Argument(attribute.Priority)
                     )
+                    .Property<string>("DefaultStage", s => s.Getter(false).Setter(false).Initial(defaultStage.ToEscapedString()))
                     .Method<byte[]>("GetKey", s => s
                         .Accessibility(Accessibility.Public)
                         .Argument<string>("stage"), code =>
@@ -105,7 +119,7 @@ namespace Charon.Dojo.ProcessorExtensions
                             code.WriteLine(stage.Key.ToEscapedString()!, " => [", string.Join(", ", publicKey), "],");
                         }
 
-                        code.WriteLine("_ => throw new ", code.GetName<NotImplementedException>(), "()")
+                        code.WriteLine("_ => throw new ", code.GetName<NotImplementedException>(), "($\"There is no encryption available for stage '{stage}'\")")
                             .EndSwitch();
                     })
                 .ToFile(path, default);

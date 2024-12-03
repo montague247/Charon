@@ -2,6 +2,8 @@ namespace Charon.Security
 {
     public interface IPublicKeyRetriever
     {
-        byte[] GetKey(string stage);
+        string DefaultStage { get; }
+
+        byte[]? GetKey(string stage);
     }
 }

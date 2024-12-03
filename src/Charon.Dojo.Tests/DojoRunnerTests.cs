@@ -4,7 +4,7 @@ namespace Charon.Dojo.Tests
 {
     public sealed class DojoRunnerTests
     {
-        [SkipOnContinuousIntegrationFact]
+        [SkipOnContinuousIntegrationFact(CheckAttachedDebugger = false)]
         public void Execute()
         {
             DojoRunner.Execute();
