@@ -2,3 +2,4 @@ localenv-*.json
 **/bin
 **/obj
 **/*.user
+/NuGet.Config
