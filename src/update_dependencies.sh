@@ -5,7 +5,7 @@
 # | |   | '_ \ / _` | '__/ _ \| '_ \ 
 # | \__/\ | | | (_| | | | (_) | | | |
 #  \____/_| |_|\__,_|_|  \___/|_| |_|
-#                                 
+#
 # Copyright (c) Dirk Helbig. All rights reserved.
 #
 
@@ -17,7 +17,16 @@ set -u
 # This is causing it to fail
 set -o pipefail
 
+echo "Update tool..."
+
+if dotnet tool update --global dotnet-outdated-tool; then
+	echo "Successfully updated"
+else
+	dotnet tool install --global dotnet-outdated-tool
+fi
+
 echo "Upgrade outdated packages..."
-dotnet outdated -u Charon.sln
+
+dotnet outdated -u
 
 echo "Finished"
