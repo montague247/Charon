@@ -6,7 +6,7 @@ namespace Charon.Core.Tests
         {
 #if DEBUG
             if (CheckAttachedDebugger &&
-                !System.Diagnostics.Debugger.IsAttached)
+                !global::System.Diagnostics.Debugger.IsAttached)
                 Skip = "No debugger attached";
 #else
             Skip = "Skip on CI pipeline";

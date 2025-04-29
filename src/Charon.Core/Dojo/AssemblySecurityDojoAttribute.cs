@@ -12,7 +12,7 @@ namespace Charon.Dojo
 
         public string? Namespace { get; private set; } = namespaceName;
 
-        public string SourcePath { get; } = System.IO.Path.GetDirectoryName(sourceFilePath)!;
+        public string SourcePath { get; } = global::System.IO.Path.GetDirectoryName(sourceFilePath)!;
 
         public string[] Stages { get; set; } = ["DEV"];
 
@@ -32,7 +32,7 @@ namespace Charon.Dojo
             if (string.IsNullOrEmpty(Path))
                 Namespace = name;
             else
-                Namespace = string.Concat(name, '.', Path.Replace(System.IO.Path.DirectorySeparatorChar, '.'));
+                Namespace = string.Concat(name, '.', Path.Replace(global::System.IO.Path.DirectorySeparatorChar, '.'));
         }
     }
 }

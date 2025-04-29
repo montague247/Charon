@@ -8,7 +8,7 @@ namespace Charon.Core.Tests
             var fact = new SkipOnContinuousIntegrationFactAttribute();
 
 #if DEBUG
-            if (!System.Diagnostics.Debugger.IsAttached)
+            if (!global::System.Diagnostics.Debugger.IsAttached)
                 Assert.Equal("No debugger attached", fact.Skip);
 #else
                 Assert.Equal("Skip on CI pipeline", fact.Skip);

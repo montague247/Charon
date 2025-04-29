@@ -8,6 +8,6 @@ namespace Charon.Core.Tests.Types
         public string? Hint { get; set; }
 
         [JsonConverter(typeof(ObjectListJsonConverter<Bar>))]
-        public System.Collections.Generic.List<Bar>? Bars { get; set; }
+        public global::System.Collections.Generic.List<Bar>? Bars { get; set; }
     }
 }
