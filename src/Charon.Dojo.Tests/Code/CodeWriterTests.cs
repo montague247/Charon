@@ -71,12 +71,14 @@ namespace Charon.Dojo.Tests.Code
                 .Method("PrivateMethod", s => s.ReturnType<Accessibility>(),
                     code =>
                     {
+#pragma warning disable CA2263 // Generische Überladung bevorzugen, wenn der Typ bekannt ist
                         code.WriteLine("// Some types:")
                             .Indent()
                             .WriteLine("// ", code.GetName<Accessibility>())
                             .WriteLine("// ", code.GetName(typeof(Accessibility)))
                             .WriteLine("// ", code.GetName(Accessibility.Public))
                             .Unindent();
+#pragma warning restore CA2263 // Generische Überladung bevorzugen, wenn der Typ bekannt ist
                         code.WriteLine("// Some more types:")
                             .Indent(indentedCode =>
                             {
@@ -89,7 +91,7 @@ namespace Charon.Dojo.Tests.Code
 
             Debug.WriteLine(actual.SingleLine());
 
-            Assert.Equal("using Charon;\nusing Charon.Dojo;\nusing Charon.Dojo.Code;\nusing Charon.Json;\n\nnamespace Charon.Dojo.Tests.Code\n{\n    public sealed partial class TestClass\n    {\n        public void PublicMethod()\n        {\n            // Hello World\n\n            var coded = true;\n        }\n\n        private Accessibility PrivateMethod()\n        {\n            // Some types:\n            // Accessibility\n            // Accessibility\n            // Accessibility.Public\n            // Some more types:\n            // DojoRunner\n            // TypeName\n            // ObjectListJsonConverter<int>\n        }\n    }\n}\n", actual);
+            Assert.Equal("using Charon;\nusing Charon.Dojo;\nusing Charon.Dojo.Code;\nusing Charon.Json;\n\nnamespace Charon.Dojo.Tests.Code\n{\n    public sealed partial class TestClass\n    {\n        public void PublicMethod()\n        {\n            // Hello World\n\n            var coded = true;\n        }\n\n        private Accessibility PrivateMethod()\n        {\n            // Some types:\n                // Accessibility\n                // Accessibility\n                // Accessibility.Public\n            // Some more types:\n                // DojoRunner\n                // TypeName\n                // ObjectListJsonConverter<int>\n        }\n    }\n}\n", actual);
         }
     }
 }
