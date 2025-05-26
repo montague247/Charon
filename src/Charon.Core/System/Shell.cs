@@ -104,5 +104,44 @@ namespace Charon.System
                     Log.Information(line);
             }
         }
+
+        public static bool IsDebianBased(bool force = false)
+        {
+            // Check if the system is running on a Debian-based distribution
+            var osReleaseFile = "/etc/os-release";
+
+            if (!File.Exists(osReleaseFile))
+            {
+                if (force)
+                    Log.Error("The file {OsReleaseFile} does not exist. Cannot determine if the system is Debian-based.", osReleaseFile);
+
+                return false;
+            }
+
+            var osReleaseContent = File.ReadAllText(osReleaseFile);
+
+            if (osReleaseContent.Contains("ID=debian", StringComparison.OrdinalIgnoreCase) ||
+                osReleaseContent.Contains("ID=ubuntu", StringComparison.OrdinalIgnoreCase) ||
+                osReleaseContent.Contains("ID=linuxmint", StringComparison.OrdinalIgnoreCase) ||
+                osReleaseContent.Contains("ID=kali", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (!force)
+                return false;
+
+            Log.Error("The system is not Debian-based. Cannot execute this operation.");
+
+            throw new NotImplementedException();
+        }
+
+        public static bool HasSudoPrivileges()
+        {
+            // Check if the user has sudo privileges
+            var exitCode = Execute("sudo", ["-n", "true"], shellExecute: true);
+
+            return exitCode == 0;
+        }
     }
 }

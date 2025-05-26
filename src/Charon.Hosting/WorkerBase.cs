@@ -18,11 +18,16 @@ public abstract class WorkerBase : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Log.Information("Start worker...");
+        var invoker = Environment.GetEnvironmentVariable("INVOCATION_ID");
+
+        if (string.IsNullOrEmpty(invoker))
+            Log.Information("Start worker without invocation ID...");
+        else
+            Log.Information("Start worker with invocation ID '{InvocationId}' ...", invoker);
 
         await OnStart(stoppingToken);
 
-        Log.Information("Worker running at: {Time}", DateTimeOffset.Now);
+        Log.Information("Worker started at: {Time}", DateTimeOffset.Now);
 
         while (!stoppingToken.IsCancellationRequested)
         {
