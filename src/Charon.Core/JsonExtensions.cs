@@ -10,11 +10,13 @@ namespace Charon
         private static readonly JsonSerializerOptions PrettyOptions = new(JsonSerializerDefaults.Web)
         {
             Converters = { new JsonStringEnumConverter() },
+            DictionaryKeyPolicy = null,
             WriteIndented = true
         };
         private static readonly JsonSerializerOptions CompactOptions = new(JsonSerializerDefaults.Web)
         {
             Converters = { new JsonStringEnumConverter() },
+            DictionaryKeyPolicy = null,
             WriteIndented = false
         };
         private static readonly JsonWriterOptions PrettyWriterOptions = new() { Indented = true };
