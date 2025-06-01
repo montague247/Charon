@@ -48,7 +48,7 @@ namespace Charon
             T impl;
 
             if (File.Exists(path))
-                impl = JsonSerializer.Deserialize<T>(File.ReadAllText(path))!;
+                impl = JsonSerializer.Deserialize<T>(File.ReadAllText(path), PrettyOptions)!;
             else
                 return create ? Activator.CreateInstance<T>() : default;
 

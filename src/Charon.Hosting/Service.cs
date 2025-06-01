@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace Charon.Hosting;
 
@@ -21,7 +21,13 @@ public static class Service
         });
         builder.Services.AddHostedService<T>();
 
+        Log.Information("Start host...");
+
+        var startedUtc = DateTime.UtcNow;
+
         var host = builder.Build();
         host.Run();
+
+        Log.Information("Host stopped after {Duration}", DateTime.UtcNow - startedUtc);
     }
 }
