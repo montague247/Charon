@@ -1,5 +1,5 @@
-using System.Security.Cryptography;
-using System.Text;
+using System.Reflection;
+using Serilog;
 
 namespace Charon;
 
@@ -31,5 +31,62 @@ public static class TypeExtensions
         }
 
         return string.Concat(fullName, ", ", type.Assembly.GetName().Name);
+    }
+
+    public static IEnumerable<Type> FindDerivedTypes(this Type baseType)
+    {
+        if (!baseType.IsClass && !baseType.IsGenericTypeDefinition && !baseType.IsInterface)
+            throw new ArgumentException($"'{baseType.FullName}' must be a class type, an interface type or generic type definition.", nameof(baseType));
+
+        return AppDomain.CurrentDomain
+            .GetAssemblies()
+            .SelectMany(assembly =>
+            {
+                Type[] types;
+
+                try
+                {
+                    types = assembly.GetTypes();
+                }
+                catch (ReflectionTypeLoadException ex)
+                {
+                    types = ex.Types.Where(t => t != null).ToArray()!;
+                }
+
+                return types;
+            })
+            .Where(type => type != null
+                           && type.IsClass
+                           && !type.IsAbstract
+                           && InheritsFrom(type, baseType));
+    }
+
+    private static bool InheritsFrom(Type type, Type baseType)
+    {
+        if (baseType.IsClass)
+            return baseType.IsAssignableFrom(type);
+
+        if (baseType.IsInterface || baseType.IsGenericTypeDefinition)
+        {
+            // get all interfaces implemented by the type
+            var interfaces = type.GetInterfaces();
+
+            // check if the type implements the base type as an interface as a generic interface
+            if (interfaces.Any(i => i == baseType || (i.IsGenericType && i.GetGenericTypeDefinition() == baseType)))
+                return true;
+        }
+
+        // check if the type is a generic type and if it matches the base type
+        var current = type;
+
+        while (current != null && current != typeof(object))
+        {
+            if (current.IsGenericType && current.GetGenericTypeDefinition() == baseType)
+                return true;
+
+            current = current.BaseType;
+        }
+
+        return false;
     }
 }
