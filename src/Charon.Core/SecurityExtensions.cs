@@ -183,4 +183,34 @@ public static class SecurityExtensions
     {
         return SecureHash(Encoding.UTF8.GetBytes(value));
     }
+
+    public static string CreateSecurePassword(int length, bool allowSpace = true)
+    {
+        var sb = new StringBuilder(length);
+        var min = allowSpace ? 32 : 33;
+
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            var data = new byte[length * 4];
+
+            do
+            {
+                rng.GetNonZeroBytes(data);
+
+                foreach (var asciiByte in data)
+                {
+                    if (asciiByte < min ||
+                        asciiByte > 126)
+                        continue;
+
+                    sb.Append((char)asciiByte);
+
+                    if (sb.Length == length)
+                        break;
+                }
+            } while (sb.Length < length);
+        }
+
+        return sb.ToString();
+    }
 }

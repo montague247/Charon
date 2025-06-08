@@ -9,6 +9,11 @@ namespace Charon.System
 
         public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false)
         {
+            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute);
+        }
+
+        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false)
+        {
             if (verbose)
                 Log.Information("Execute: {FileName} {Arguments}", fileName, string.Join(' ', arguments));
             else
@@ -17,6 +22,7 @@ namespace Charon.System
             var psi = new ProcessStartInfo
             {
                 FileName = fileName,
+                WorkingDirectory = workingDirectory,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = shellExecute,
@@ -54,24 +60,84 @@ namespace Charon.System
 
         public static int BashExecute(string command, string fileName, List<string> arguments, bool verbose = false)
         {
+            return BashExecute(command, fileName, Environment.CurrentDirectory, arguments, verbose);
+        }
+
+        public static int BashExecute(string command, string fileName, string workingDirectory, List<string> arguments, bool verbose = false)
+        {
             var bashArguments = new List<string> { command, fileName };
             bashArguments.AddRange(arguments);
 
             // Arguments = string.Format("-c \"sudo {0} {1} {2}\"", "/path/to/script", "arg1", arg2)
-            return Execute("/bin/bash", ["-c", string.Join(' ', bashArguments)], verbose);
+            return Execute("/bin/bash", workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
         }
 
         public static int SudoExecute(string fileName, List<string> arguments, IShellOptions shellOptions, bool verbose = false)
+        {
+            return SudoExecute(fileName, Environment.CurrentDirectory, arguments, shellOptions, verbose);
+        }
+
+        public static int SudoExecute(string fileName, string workingDirectory, List<string> arguments, IShellOptions shellOptions, bool verbose = false)
         {
             if (shellOptions.SudoAlternative)
             {
                 var sudoArguments = new List<string> { fileName };
                 sudoArguments.AddRange(arguments);
 
-                return Execute("sudo", sudoArguments, verbose);
+                return Execute("sudo", workingDirectory, sudoArguments, verbose);
             }
 
-            return BashExecute("sudo", fileName, arguments, verbose);
+            return BashExecute("sudo", workingDirectory, fileName, arguments, verbose);
+        }
+
+        public static async Task<string?> GetOutput(string fileName, List<string> arguments, bool standardOutput = true, bool verbose = false)
+        {
+            if (verbose)
+                Log.Information("GetOutput: {FileName} {Arguments}", fileName, string.Join(' ', arguments));
+            else
+                Log.Debug("GetOutput: {FileName} {Arguments}", fileName, string.Join(' ', arguments));
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = fileName,
+                RedirectStandardOutput = standardOutput,
+                RedirectStandardError = !standardOutput,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            foreach (var argument in arguments)
+            {
+                psi.ArgumentList.Add(argument);
+            }
+
+            using var process = new Process { StartInfo = psi };
+            process.Start();
+
+            var output = await process.StandardOutput.ReadToEndAsync();
+
+            process.WaitForExit();
+
+            return output;
+        }
+
+        public static bool IsCommandAvailable(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Command name cannot be null or empty.", nameof(name));
+
+            return Execute("which", [name]) == 0;
+        }
+
+        public static void CheckInstall(IShellOptions shellOptions, params string[] toolNames)
+        {
+            if (shellOptions.NoInstall)
+                return;
+
+            foreach (var toolName in toolNames)
+            {
+                CheckInstall(toolName, shellOptions);
+            }
         }
 
         public static void CheckInstall(string toolName, IShellOptions shellOptions)
@@ -84,25 +150,12 @@ namespace Charon.System
             if (!_installedTools.Add(toolName))
                 return;
 
-            if (Execute("which", [toolName]) == 0)
+            if (IsCommandAvailable(toolName))
                 return;
 
             Log.Information("{Name} is not installed. Try to install it.", toolName);
 
             SudoExecute("apt", ["install", toolName, "-y"], shellOptions);
-        }
-
-        private static void ReadStreamAsync(StreamReader stream, bool error)
-        {
-            string? line;
-
-            while ((line = stream.ReadLine()) != null)
-            {
-                if (error)
-                    Log.Error(line);
-                else
-                    Log.Information(line);
-            }
         }
 
         public static bool IsDebianBased(bool force = false)
@@ -142,6 +195,39 @@ namespace Charon.System
             var exitCode = Execute("sudo", ["-n", "true"], shellExecute: true);
 
             return exitCode == 0;
+        }
+
+        public static void EnsureNodeJS(IShellOptions shellOptions)
+        {
+            if (IsCommandAvailable("node") && IsCommandAvailable("npm"))
+            {
+                Log.Information("Node.js and npm are already installed.");
+                return;
+            }
+
+            if (Execute("curl", ["-sL", "https://deb.nodesource.com/setup_20.x", "-o", "/tmp/nodesource_setup.sh"]) != 0)
+            {
+                Log.Error("Failed to download Node.js setup script.");
+                return;
+            }
+
+            SudoExecute("bash", ["/tmp/nodesource_setup.sh"], shellOptions);
+            CheckInstall("nodejs", shellOptions);
+
+            Log.Information("Node.js and npm have been installed.");
+        }
+
+        private static void ReadStreamAsync(StreamReader stream, bool error)
+        {
+            string? line;
+
+            while ((line = stream.ReadLine()) != null)
+            {
+                if (error)
+                    Log.Error(line);
+                else
+                    Log.Information(line);
+            }
         }
     }
 }
