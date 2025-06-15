@@ -77,6 +77,16 @@ namespace Charon.System
             return Execute("/bin/bash", workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
         }
 
+        public static int BashExecute(List<string> bashArguments, bool verbose = false)
+        {
+            return Execute(Environment.CurrentDirectory, bashArguments, verbose);
+        }
+
+        public static int BashExecute(string workingDirectory, List<string> bashArguments, bool verbose = false)
+        {
+            return Execute("/bin/bash", workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
+        }
+
         public static int SudoExecute(string fileName, List<string> arguments, IShellOptions shellOptions, bool verbose = false)
         {
             return SudoExecute(fileName, Environment.CurrentDirectory, arguments, shellOptions, verbose);
