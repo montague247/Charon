@@ -23,8 +23,8 @@ namespace Charon.System
             {
                 FileName = fileName,
                 WorkingDirectory = workingDirectory,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
+                RedirectStandardOutput = !shellExecute,
+                RedirectStandardError = !shellExecute,
                 UseShellExecute = shellExecute,
                 CreateNoWindow = !shellExecute
             };
