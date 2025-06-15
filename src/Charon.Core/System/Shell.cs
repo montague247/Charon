@@ -84,6 +84,16 @@ namespace Charon.System
             return Execute("/bin/bash", workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
         }
 
+        public static int BashExecute(string arguments, bool verbose = false)
+        {
+            return BashExecute(arguments, Environment.CurrentDirectory, verbose);
+        }
+
+        public static int BashExecute(string arguments, string workingDirectory, bool verbose = false)
+        {
+            return Execute("/bin/bash", workingDirectory, ["-c", arguments], verbose);
+        }
+
         public static int SudoExecute(string fileName, List<string> arguments, IShellOptions shellOptions, bool verbose = false)
         {
             return SudoExecute(fileName, Environment.CurrentDirectory, arguments, shellOptions, verbose);
@@ -138,12 +148,23 @@ namespace Charon.System
             return await GetOutput("/bin/bash", ["-c", string.Join(' ', bashArguments)], standardOutput, verbose);
         }
 
+        public static async Task<string?> GetBashOutput(string arguments, bool standardOutput = true, bool verbose = false)
+        {
+            return await GetOutput("/bin/bash", ["-c", arguments], standardOutput, verbose);
+        }
+
         public static bool IsCommandAvailable(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Command name cannot be null or empty.", nameof(name));
 
-            return Execute("which", [name]) == 0;
+            if (Execute("which", [name]) == 0)
+                return true;
+
+            // Check if package is available
+            var output = GetBashOutput($"dpkg -l | grep ^ii | grep {name}").GetAwaiter().GetResult();
+
+            return !string.IsNullOrWhiteSpace(output);
         }
 
         public static void CheckInstall(IShellOptions shellOptions, params string[] toolNames)
