@@ -9,12 +9,12 @@ namespace Charon.System
 
         private static HashSet<string>? _installedTools;
 
-        public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false)
+        public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false, Dictionary<string, string>? environmentVariables = null)
         {
-            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute);
+            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute, environmentVariables);
         }
 
-        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false)
+        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false, Dictionary<string, string>? environmentVariables = null)
         {
             if (verbose)
                 Log.Information("Execute ({Type}): {FileName} {Arguments}", shellExecute ? "shell" : "direct", fileName, string.Join(' ', arguments));
@@ -30,6 +30,14 @@ namespace Charon.System
                 UseShellExecute = shellExecute,
                 CreateNoWindow = !shellExecute
             };
+
+            if (environmentVariables != null)
+            {
+                foreach (var kvp in environmentVariables)
+                {
+                    Environment.SetEnvironmentVariable(kvp.Key, kvp.Value);
+                }
+            }
 
             foreach (var argument in arguments)
             {
@@ -243,7 +251,7 @@ namespace Charon.System
                 return;
             }
 
-            if (Execute("curl", ["-sL", "https://deb.nodesource.com/setup_20.x", "-o", "/tmp/nodesource_setup.sh"]) != 0)
+            if (Execute("curl", ["-fsSL", "https://deb.nodesource.com/setup_lts.x", "-o", "/tmp/nodesource_setup.sh"]) != 0)
             {
                 Log.Error("Failed to download Node.js setup script.");
                 return;
