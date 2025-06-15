@@ -9,12 +9,12 @@ namespace Charon.System
     {
         private static HashSet<string>? _installedTools;
 
-        public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false, bool logFailed = true)
+        public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false)
         {
-            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute, logFailed);
+            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute);
         }
 
-        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false, bool logFailed = true)
+        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false)
         {
             if (verbose)
                 Log.Information("Execute ({Type}): {FileName} {Arguments}", shellExecute ? "shell" : "direct", fileName, string.Join(' ', arguments));
@@ -56,9 +56,6 @@ namespace Charon.System
                 process.Close();
                 throw new InvalidOperationException($"{fileName} timeout after {timeout}");
             }
-
-            if (logFailed && process.ExitCode != 0)
-                Log.Error("{FileName} error (Exit Code: {ExitCode})", fileName, process.ExitCode);
 
             return process.ExitCode;
         }
