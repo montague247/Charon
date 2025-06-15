@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using Serilog;
+using Serilog.Configuration;
+using Serilog.Debugging;
 
 namespace Charon.System
 {
@@ -7,12 +9,12 @@ namespace Charon.System
     {
         private static HashSet<string>? _installedTools;
 
-        public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false)
+        public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false, bool logFailed = true)
         {
-            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute);
+            return Execute(fileName, Environment.CurrentDirectory, arguments, verbose, shellExecute, logFailed);
         }
 
-        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false)
+        public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false, bool logFailed = true)
         {
             if (verbose)
                 Log.Information("Execute ({Type}): {FileName} {Arguments}", shellExecute ? "shell" : "direct", fileName, string.Join(' ', arguments));
@@ -55,7 +57,7 @@ namespace Charon.System
                 throw new InvalidOperationException($"{fileName} timeout after {timeout}");
             }
 
-            if (process.ExitCode != 0)
+            if (logFailed && process.ExitCode != 0)
                 Log.Error("{FileName} error (Exit Code: {ExitCode})", fileName, process.ExitCode);
 
             return process.ExitCode;
