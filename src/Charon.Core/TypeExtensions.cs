@@ -42,6 +42,19 @@ public static class TypeExtensions
             .GetAssemblies()
             .SelectMany(assembly =>
             {
+#if DEBUG
+                var name = assembly.GetName().Name ?? "Unknown Assembly";
+
+                if (!name.StartsWith("System.", StringComparison.Ordinal) &&
+                    !name.StartsWith("Microsoft.", StringComparison.Ordinal) &&
+                    !name.StartsWith("Newtonsoft.", StringComparison.Ordinal) &&
+                    !name.StartsWith("netstandard", StringComparison.Ordinal) &&
+                    !name.StartsWith("testhost", StringComparison.Ordinal) &&
+                    !name.StartsWith("Anonymously", StringComparison.Ordinal) &&
+                    !name.StartsWith("xunit.", StringComparison.Ordinal))
+                    Log.Information("Loading types from assembly {AssemblyName}", name);
+#endif
+
                 Type[] types;
 
                 try
