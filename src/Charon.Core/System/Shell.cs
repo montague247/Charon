@@ -90,7 +90,7 @@ namespace Charon.System
                 return Execute("sudo", workingDirectory, sudoArguments, verbose);
             }
 
-            return BashExecute("sudo", workingDirectory, fileName, arguments, verbose);
+            return BashExecute("sudo", fileName, workingDirectory, arguments, verbose);
         }
 
         public static async Task<string?> GetOutput(string fileName, List<string> arguments, bool standardOutput = true, bool verbose = false)
@@ -122,6 +122,11 @@ namespace Charon.System
             process.WaitForExit();
 
             return output;
+        }
+
+        public static async Task<string?> GetBashOutput(List<string> bashArguments, bool standardOutput = true, bool verbose = false)
+        {
+            return await GetOutput("/bin/bash", ["-c", string.Join(' ', bashArguments)], standardOutput, verbose);
         }
 
         public static bool IsCommandAvailable(string name)
