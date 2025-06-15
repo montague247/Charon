@@ -38,11 +38,14 @@ namespace Charon.System
 
             process.Start();
 
-            // Start parallel reading of Standard-Output and Standard-Error
-            var outputTask = Task.Run(() => ReadStreamAsync(process.StandardOutput, false));
-            var errorTask = Task.Run(() => ReadStreamAsync(process.StandardError, true));
+            if (!shellExecute)
+            {
+                // Start parallel reading of Standard-Output and Standard-Error
+                var outputTask = Task.Run(() => ReadStreamAsync(process.StandardOutput, false));
+                var errorTask = Task.Run(() => ReadStreamAsync(process.StandardError, true));
 
-            Task.WhenAll(outputTask, errorTask);
+                Task.WhenAll(outputTask, errorTask);
+            }
 
             var timeout = TimeSpan.FromMinutes(60);
 
