@@ -1,12 +1,12 @@
 using System.Diagnostics;
 using Serilog;
-using Serilog.Configuration;
-using Serilog.Debugging;
 
 namespace Charon.System
 {
     public static class Shell
     {
+        public const string AptGetCommand = "apt-get";
+
         private static HashSet<string>? _installedTools;
 
         public static int Execute(string fileName, List<string> arguments, bool verbose = false, bool shellExecute = false)
@@ -172,7 +172,7 @@ namespace Charon.System
 
             Log.Information("{Name} is not installed. Try to install it.", toolName);
 
-            SudoExecute("apt", ["install", toolName, "-y"], shellOptions);
+            SudoExecute(AptGetCommand, ["install", toolName, "-y"], shellOptions);
         }
 
         public static bool IsDebianBased(bool force = false)
