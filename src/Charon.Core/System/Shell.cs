@@ -15,9 +15,9 @@ namespace Charon.System
         public static int Execute(string fileName, string workingDirectory, List<string> arguments, bool verbose = false, bool shellExecute = false)
         {
             if (verbose)
-                Log.Information("Execute: {FileName} {Arguments}", fileName, string.Join(' ', arguments));
+                Log.Information("Execute ({Type}): {FileName} {Arguments}", shellExecute ? "shell" : "direct", fileName, string.Join(' ', arguments));
             else
-                Log.Debug("Execute: {FileName} {Arguments}", fileName, string.Join(' ', arguments));
+                Log.Debug("Execute ({Type}): {FileName} {Arguments}", shellExecute ? "shell" : "direct", fileName, string.Join(' ', arguments));
 
             var psi = new ProcessStartInfo
             {
