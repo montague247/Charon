@@ -12,9 +12,20 @@ public abstract class WorkerBase : BackgroundService
         hostApplicationLifetime.ApplicationStopped.Register(OnStopped);
     }
 
-    protected abstract Task OnStart(CancellationToken cancellationToken);
+    protected virtual Task OnStart(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 
-    protected abstract Task OnStop(CancellationToken cancellationToken);
+    protected virtual Task OnExecute(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    protected virtual Task OnStop(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -31,6 +42,8 @@ public abstract class WorkerBase : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            await OnExecute(stoppingToken);
+
             await Task.Delay(1000, stoppingToken);
         }
 
