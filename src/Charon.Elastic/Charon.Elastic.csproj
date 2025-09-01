@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="9.1.5" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" Version="9.1.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Charon.Core\Charon.Core.csproj" />
