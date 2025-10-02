@@ -1,9 +1,10 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import api from "../lib/api";
 
-export default function HomePage() {
-    const { data, isLoading } = useQuery({
+import { useQuery } from "@tanstack/react-query";
+import api from "../../lib/api";
+
+export default function ApiPage() {
+    const { data, isLoading, error } = useQuery({
         queryKey: ["weather"],
         queryFn: async () => {
             const res = await api.get<string[]>("/weather");
@@ -11,7 +12,13 @@ export default function HomePage() {
         },
     });
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) {
+        return <p className="p-6">Loading...</p>;
+    }
+
+    if (error) {
+        return <p className="p-6 text-red-500">Failed to load weather data.</p>;
+    }
 
     return (
         <div className="p-6">
