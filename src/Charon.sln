@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Hosting", "Charon.Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Hosting.Tests", "Charon.Hosting.Tests\Charon.Hosting.Tests.csproj", "{541F51F4-CB42-42F8-B9FF-9DA4650AA225}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Api", "Charon.Api\Charon.Api.csproj", "{E17E54DF-BF27-4F91-999B-688FE87F09C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,18 @@ Global
 		{541F51F4-CB42-42F8-B9FF-9DA4650AA225}.Release|x64.Build.0 = Release|Any CPU
 		{541F51F4-CB42-42F8-B9FF-9DA4650AA225}.Release|x86.ActiveCfg = Release|Any CPU
 		{541F51F4-CB42-42F8-B9FF-9DA4650AA225}.Release|x86.Build.0 = Release|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Debug|x64.Build.0 = Debug|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Debug|x86.Build.0 = Debug|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Release|x64.ActiveCfg = Release|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Release|x64.Build.0 = Release|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Release|x86.ActiveCfg = Release|Any CPU
+		{E17E54DF-BF27-4F91-999B-688FE87F09C8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
