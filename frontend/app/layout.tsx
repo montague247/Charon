@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 
 const geistSans = Geist({
@@ -35,7 +35,6 @@ export default async function RootLayout({
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSidebar />
           <main>
-            <SidebarTrigger />
             <Providers>{children}</Providers>
           </main>
         </SidebarProvider>

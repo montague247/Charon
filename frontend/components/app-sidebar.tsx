@@ -3,12 +3,14 @@ import { Home, Search, Settings } from "lucide-react"
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem,
+    SidebarRail
 } from "@/components/ui/sidebar"
 
 const items = [
@@ -31,7 +33,7 @@ const items = [
 
 export function AppSidebar() {
     return (
-        <Sidebar>
+        <Sidebar collapsible="icon">
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Charon UI</SidebarGroupLabel>
@@ -51,6 +53,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarRail />
         </Sidebar>
     )
 }
