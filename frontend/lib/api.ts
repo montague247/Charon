@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:5000/api", // .NET API
+    baseURL: "https://68e3c58a8e14f4523dae9daf.mockapi.io/api/latest/", // .NET API
 });
 
 export default api;

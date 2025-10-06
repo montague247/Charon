@@ -1,4 +1,6 @@
-import { Home, Search, Settings } from "lucide-react"
+"use client"
+
+import { Home, Search, Settings, Users } from "lucide-react"
 
 import {
     Sidebar,
@@ -12,6 +14,7 @@ import {
     SidebarMenuItem,
     SidebarRail
 } from "@/components/ui/sidebar"
+import { ModeToggle } from "./mode-toggle"
 
 const items = [
     {
@@ -28,6 +31,11 @@ const items = [
         title: "Settings",
         url: "#",
         icon: Settings,
+    },
+    {
+        title: "Users",
+        url: "users",
+        icon: Users,
     }
 ]
 
@@ -53,6 +61,9 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter>
+                <ModeToggle />
+            </SidebarFooter>
             <SidebarRail />
         </Sidebar>
     )
