@@ -1,5 +1,6 @@
 # Structure
 
+```
 Charon/
 ├── .github/
 │   └── workflows/
@@ -18,6 +19,7 @@ Charon/
 ├── docker/                   # Dockerfiles for both parts
 ├── docker-compose.yml
 └── README.md
+```
 
 # Frontend Setup
 Inside the `frontend` folder:

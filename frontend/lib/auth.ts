@@ -40,23 +40,5 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         strategy: "jwt"
-    },
-    callbacks: {
-        async signIn({ user, account, profile, email, credentials }) {
-            console.log("callback: signIn");
-            return true
-        },
-        async redirect({ url, baseUrl }) {
-            console.log("callback: redirect " + baseUrl);
-            return baseUrl
-        },
-        async jwt({ token, user, account, profile }) {
-            console.log("callback: jwt");
-            return token
-        },
-        async session({ session, user, token }) {
-            console.log("callback: session");
-            return session
-        }
     }
 }
