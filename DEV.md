@@ -33,6 +33,26 @@ Add API Helper:
 npm install axios @tanstack/react-query
 ```
 
+# OAuth configuration
+Create or edit `.env.local`:
+```
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+APPLE_CLIENT_ID=
+APPLE_CLIENT_SECRET=
+BATTLENET_CLIENT_ID=
+BATTLENET_CLIENT_SECRET=
+NEXTAUTH_SECRET=long-random-string-see-below
+NEXTAUTH_URL=http://localhost:3000
+```
+
+Set NEXTAUTH_SECRET with:
+```
+openssl rand -base64 32
+```
+
 # Deployment
 Secrets to set in the repo:
 - AZURE_PUBLISH_PROFILE (wenn Azure genutzt wird → bekommst du im Azure Portal)
