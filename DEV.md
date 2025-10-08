@@ -50,13 +50,13 @@ NEXTAUTH_SECRET=long-random-string-see-below
 NEXTAUTH_URL=http://localhost:3000
 ```
 
-Set NEXTAUTH_SECRET with:
+Set `NEXTAUTH_SECRET` with:
 ```
 openssl rand -base64 32
 ```
 
 # Deployment
 Secrets to set in the repo:
-- AZURE_PUBLISH_PROFILE (wenn Azure genutzt wird → bekommst du im Azure Portal)
-- oder AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY (wenn AWS ECS genutzt wird)
-- optional DOCKERHUB_USERNAME + DOCKERHUB_TOKEN, falls du Docker Hub statt GHCR nutzt
+- `AZURE_PUBLISH_PROFILE` (check Azure Portal)
+- or `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` (if AWS ECS is used)
+- optional `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN`, if Docker Hub instead of GHCR is used
