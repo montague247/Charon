@@ -1,4 +1,7 @@
-import { NextAuthOptions } from "next-auth"
+import { NextApiRequest, NextApiResponse } from "next";
+import { NextAuthOptions, Session, TokenSet } from "next-auth"
+import { JWT } from "next-auth/jwt";
+import NextAuth from "next-auth/next";
 import { Provider } from "next-auth/providers/index"
 import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
@@ -32,13 +35,37 @@ if (process.env.BATTLENET_CLIENT_ID && process.env.BATTLENET_CLIENT_SECRET)
         issuer: "https://eu.battle.net/oauth"
     }));
 
+export interface ExtendedJWT extends JWT {
+    accessToken?: string;
+}
+export interface ExtendedSession extends Session {
+    accessToken?: string;
+}
+
 export const authOptions: NextAuthOptions = {
     providers: providers,
     secret: process.env.NEXTAUTH_SECRET,
-    pages: {
-        signIn: "/api/auth/signin"
-    },
     session: {
         strategy: "jwt"
+    },
+    callbacks: {
+        async jwt({ token, account }): Promise<JWT> {
+            if (account) {
+                token.accessToken = (account as TokenSet).access_token;
+            }
+
+            return token as ExtendedJWT;
+        },
+        async session({ session, token }): Promise<Session> {
+            const extendedSession: ExtendedSession = {
+                ...session, accessToken: (token as ExtendedJWT).accessToken,
+            };
+
+            return extendedSession;
+        }
     }
+}
+
+export default function NextAuthHandler(req: NextApiRequest, res: NextApiResponse) {
+    return NextAuth(req, res, authOptions);
 }
