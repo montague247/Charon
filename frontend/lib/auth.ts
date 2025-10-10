@@ -52,7 +52,10 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, account }): Promise<JWT> {
             if (account) {
                 token.accessToken = (account as TokenSet).access_token;
+                console.log("Token Set:", account);
             }
+
+            console.log("JWT:", token);
 
             return token as ExtendedJWT;
         },
