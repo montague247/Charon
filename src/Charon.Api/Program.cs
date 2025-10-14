@@ -15,21 +15,21 @@ builder.Services.AddCors(o => o.AddPolicy("AllowAll", b => b.AllowAnyOrigin().Al
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        /*
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidIssuer = "DEIN_ISSUER",
-            ValidAudience = "DEINE_AUDIENCE",
-            use [Authorize] to protect endpoints
-        */
+        var jwtSettings = builder.Configuration.GetSection("Jwt");
+        var validIssuer = jwtSettings["ValidIssuer"];
+        var validAudience = jwtSettings["ValidAudience"];
+
+        // use [Authorize] to protect endpoints
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
+            ValidateIssuer = !string.IsNullOrEmpty(validIssuer),
+            ValidateAudience = !string.IsNullOrEmpty(validAudience),
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
+            ValidIssuer = validIssuer,
+            ValidAudience = validAudience,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? "DEIN_SECRET_KEY"))
+                Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? "YOUR_SECRET_KEY"))
         };
     });
 
