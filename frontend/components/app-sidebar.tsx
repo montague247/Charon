@@ -15,6 +15,8 @@ import {
     SidebarRail
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "./mode-toggle"
+import { NavUser } from "./nav-user"
+import { useSession } from "next-auth/react"
 
 const items = [
     {
@@ -40,6 +42,13 @@ const items = [
 ]
 
 export function AppSidebar() {
+    const { data: session } = useSession();
+
+    if (!session || !session.user)
+        return null;
+
+    console.log(session.user);
+
     return (
         <Sidebar collapsible="icon">
             <SidebarContent>
@@ -63,6 +72,7 @@ export function AppSidebar() {
             </SidebarContent>
             <SidebarFooter>
                 <ModeToggle />
+                <NavUser user={session.user} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

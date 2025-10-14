@@ -40,13 +40,15 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSidebar />
-            <main>
-              <Providers>{children}</Providers>
-            </main>
+            <Providers>
+              <AppSidebar />
+              <main>
+                {children}
+              </main>
+            </Providers>
           </SidebarProvider>
         </ThemeProvider>
       </body>
-    </html>
+    </html >
   )
 }
