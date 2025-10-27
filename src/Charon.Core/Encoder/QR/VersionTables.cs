@@ -2,19 +2,6 @@ namespace Charon.Encoder.QR;
 
 static class VersionTables
 {
-    // For brevity, I include Version 1..10 tables for capacities & block structure
-    // This is a condensed selection of needed info:
-    // For each version & ECC level: total data codewords, ec codewords per block, and block groups
-
-    // Entry: [version][ecc] -> (totalDataCodewords, ecPerBlock, [ (blocks,count) ... ])
-    // ecc index: L=0 M=1 Q=2 H=3
-    private static readonly Dictionary<int, (int total, int ecPerBlock, BlockInfo[] blocks)> table = new()
-            {
-                // Version 1
-                {1, ( 19, 7, new BlockInfo[]{ new BlockInfo{ DataCodewords=19, Count=1 } }) }, // L
-                // but we need per ECC level; we will define method to return per ECC.
-            };
-
     // We need full maps per version and ECC
     // To keep things manageable for this sample, create explicit mapping for versions 1..10 & all ECC levels
     // Data derived from ISO/IEC 18004 tables (abbreviated)
@@ -24,14 +11,21 @@ static class VersionTables
     {
         var d = new Dictionary<(int, EccLevel), VersionInfo>();
 
-        // NOTE: The following are the standard QR block parameters for v1..v10.
         // For each: totalDataCodewords, ecCodewordsPerBlock, blocks (count + dataCodewords per block)
         // The arrays below were populated based on spec tables.
 
         void add(int v, EccLevel e, int totalData, int ecPerBlock, params (int count, int dataPerBlock)[] groups)
         {
-            var vi = new VersionInfo { Version = v, TotalDataCodewords = totalData, EcCodewordsPerBlock = ecPerBlock };
-            foreach (var g in groups) vi.Blocks.Add(new BlockInfo { Count = g.count, DataCodewords = g.dataPerBlock });
+            var vi = new VersionInfo
+            {
+                Version = v,
+                TotalDataCodewords = totalData,
+                EcCodewordsPerBlock = ecPerBlock
+            };
+
+            foreach (var (count, dataPerBlock) in groups)
+                vi.Blocks.Add(new BlockInfo { Count = count, DataCodewords = dataPerBlock });
+
             d[(v, e)] = vi;
         }
 
@@ -71,15 +65,15 @@ static class VersionTables
             Version = 5,
             TotalDataCodewords = 62,
             EcCodewordsPerBlock = 18,
-            Blocks = new List<BlockInfo> { new BlockInfo { Count = 2, DataCodewords = 15 }, new BlockInfo { Count = 2, DataCodewords = 16 } }
+            Blocks = [new BlockInfo { Count = 2, DataCodewords = 15 }, new BlockInfo { Count = 2, DataCodewords = 16 }]
         };
         add(5, EccLevel.High, 46, 24, (2, 11), (2, 12));
-        d[(5, EccLevel.High)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 2, DataCodewords = 11 }, new BlockInfo { Count = 2, DataCodewords = 12 } };
+        d[(5, EccLevel.High)].Blocks = [new BlockInfo { Count = 2, DataCodewords = 11 }, new BlockInfo { Count = 2, DataCodewords = 12 }];
 
         // Version 6
         add(6, EccLevel.Low, 136, 18, (1, 136));
         add(6, EccLevel.Medium, 108, 16, (2, 27), (2, 26));
-        d[(6, EccLevel.Medium)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 2, DataCodewords = 27 }, new BlockInfo { Count = 2, DataCodewords = 26 } };
+        d[(6, EccLevel.Medium)].Blocks = [new BlockInfo { Count = 2, DataCodewords = 27 }, new BlockInfo { Count = 2, DataCodewords = 26 }];
         add(6, EccLevel.Quartile, 76, 24, (4, 19));
         add(6, EccLevel.High, 60, 28, (4, 15));
 
@@ -88,34 +82,34 @@ static class VersionTables
         add(7, EccLevel.Medium, 124, 18, (2, 37));
         add(7, EccLevel.Quartile, 88, 18, (4, 22));
         add(7, EccLevel.High, 66, 26, (4, 14), (4, 15));
-        d[(7, EccLevel.High)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 14 }, new BlockInfo { Count = 4, DataCodewords = 15 } };
+        d[(7, EccLevel.High)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 14 }, new BlockInfo { Count = 4, DataCodewords = 15 }];
 
         // Version 8
         add(8, EccLevel.Low, 194, 24, (1, 194));
         add(8, EccLevel.Medium, 154, 22, (2, 38), (2, 39));
-        d[(8, EccLevel.Medium)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 2, DataCodewords = 38 }, new BlockInfo { Count = 2, DataCodewords = 39 } };
+        d[(8, EccLevel.Medium)].Blocks = [new BlockInfo { Count = 2, DataCodewords = 38 }, new BlockInfo { Count = 2, DataCodewords = 39 }];
         add(8, EccLevel.Quartile, 110, 22, (4, 20), (2, 21));
-        d[(8, EccLevel.Quartile)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 20 }, new BlockInfo { Count = 2, DataCodewords = 21 } };
+        d[(8, EccLevel.Quartile)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 20 }, new BlockInfo { Count = 2, DataCodewords = 21 }];
         add(8, EccLevel.High, 86, 26, (4, 16), (4, 17));
-        d[(8, EccLevel.High)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 16 }, new BlockInfo { Count = 4, DataCodewords = 17 } };
+        d[(8, EccLevel.High)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 16 }, new BlockInfo { Count = 4, DataCodewords = 17 }];
 
         // Version 9
         add(9, EccLevel.Low, 232, 30, (1, 232));
         add(9, EccLevel.Medium, 182, 22, (2, 36), (4, 37));
-        d[(9, EccLevel.Medium)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 2, DataCodewords = 36 }, new BlockInfo { Count = 4, DataCodewords = 37 } };
+        d[(9, EccLevel.Medium)].Blocks = [new BlockInfo { Count = 2, DataCodewords = 36 }, new BlockInfo { Count = 4, DataCodewords = 37 }];
         add(9, EccLevel.Quartile, 132, 20, (4, 20), (4, 21));
-        d[(9, EccLevel.Quartile)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 20 }, new BlockInfo { Count = 4, DataCodewords = 21 } };
+        d[(9, EccLevel.Quartile)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 20 }, new BlockInfo { Count = 4, DataCodewords = 21 }];
         add(9, EccLevel.High, 100, 24, (4, 18), (4, 19));
-        d[(9, EccLevel.High)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 18 }, new BlockInfo { Count = 4, DataCodewords = 19 } };
+        d[(9, EccLevel.High)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 18 }, new BlockInfo { Count = 4, DataCodewords = 19 }];
 
         // Version 10
         add(10, EccLevel.Low, 274, 18, (1, 274));
         add(10, EccLevel.Medium, 216, 26, (2, 43), (2, 44));
-        d[(10, EccLevel.Medium)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 2, DataCodewords = 43 }, new BlockInfo { Count = 2, DataCodewords = 44 } };
+        d[(10, EccLevel.Medium)].Blocks = [new BlockInfo { Count = 2, DataCodewords = 43 }, new BlockInfo { Count = 2, DataCodewords = 44 }];
         add(10, EccLevel.Quartile, 154, 24, (4, 22), (6, 23));
-        d[(10, EccLevel.Quartile)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 22 }, new BlockInfo { Count = 6, DataCodewords = 23 } };
+        d[(10, EccLevel.Quartile)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 22 }, new BlockInfo { Count = 6, DataCodewords = 23 }];
         add(10, EccLevel.High, 122, 28, (4, 20), (6, 21));
-        d[(10, EccLevel.High)].Blocks = new List<BlockInfo> { new BlockInfo { Count = 4, DataCodewords = 20 }, new BlockInfo { Count = 6, DataCodewords = 21 } };
+        d[(10, EccLevel.High)].Blocks = [new BlockInfo { Count = 4, DataCodewords = 20 }, new BlockInfo { Count = 6, DataCodewords = 21 }];
 
         return d;
     }
@@ -200,7 +194,7 @@ static class VersionTables
             if (version <= 26) return 10;
             return 12;
         }
-        
+
         throw new ArgumentOutOfRangeException(nameof(mode), "Unsupported mode");
     }
 }
