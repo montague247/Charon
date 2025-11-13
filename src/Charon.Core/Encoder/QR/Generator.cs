@@ -58,8 +58,10 @@ public static class Generator
 
         for (int mask = 0; mask < 8; mask++)
         {
-            bool[,] copy = ConvertNullableToBool(matrix, false); // copy of fixed modules with false for unset
+            bool[,] copy = ConvertNullableToBool(matrix); // copy of fixed modules with false for unset
+
             ApplyDataMask(copy, matrix, mask);
+            
             FormatAndVersionPlacer.PlaceFormatAndVersion(copy, eccLevel, mask, version);
 
             int penalty = MaskEvaluator.CalculatePenalty(copy);
@@ -185,68 +187,80 @@ public static class Generator
         };
         bb.Put(count, cciBits);
 
-        // Data encoding by mode
+        // Delegate data encoding to helper methods
         switch (mode)
         {
             case Mode.Numeric:
-                {
-                    int i = 0;
-                    while (i < text.Length)
-                    {
-                        int take = Math.Min(3, text.Length - i);
-                        string part = text.Substring(i, take);
-                        int val = int.Parse(part);
-                        if (take == 3) bb.Put(val, 10);
-                        else if (take == 2) bb.Put(val, 7);
-                        else bb.Put(val, 4);
-                        i += take;
-                    }
-                }
+                EncodeNumericData(text, bb);
                 break;
             case Mode.Alphanumeric:
-                {
-                    int i = 0;
-                    while (i < text.Length)
-                    {
-                        if (i + 1 < text.Length)
-                        {
-                            int val = AlphaChars.IndexOf(char.ToUpperInvariant(text[i])) * 45 + AlphaChars.IndexOf(char.ToUpperInvariant(text[i + 1]));
-                            bb.Put(val, 11);
-                            i += 2;
-                        }
-                        else
-                        {
-                            int val = AlphaChars.IndexOf(char.ToUpperInvariant(text[i]));
-                            bb.Put(val, 6);
-                            i++;
-                        }
-                    }
-                }
+                EncodeAlphanumericData(text, bb);
                 break;
             case Mode.Byte:
-                {
-                    byte[] bs = Encoding.UTF8.GetBytes(text);
-                    foreach (byte b in bs) bb.Put(b, 8);
-                }
+                EncodeByteData(text, bb);
                 break;
             case Mode.Kanji:
-                {
-                    Encoding shiftJis = Encoding.GetEncoding("shift_jis");
-                    byte[] sj = shiftJis.GetBytes(text);
-                    for (int i = 0; i < sj.Length; i += 2)
-                    {
-                        int val = ((sj[i] & 0xFF) << 8) | (sj[i + 1] & 0xFF);
-                        int adjusted = (val >= 0x8140 && val <= 0x9FFC) ? val - 0x8140 : val - 0xC140;
-                        int msb = (adjusted >> 8) & 0xFF;
-                        int lsb = adjusted & 0xFF;
-                        int final = msb * 0xC0 + lsb;
-                        bb.Put(final, 13);
-                    }
-                }
+                EncodeKanjiData(text, bb);
                 break;
         }
 
         return bb;
+    }
+
+    private static void EncodeNumericData(string text, BitBuffer bb)
+    {
+        int i = 0;
+        while (i < text.Length)
+        {
+            int take = Math.Min(3, text.Length - i);
+            string part = text.Substring(i, take);
+            int val = int.Parse(part);
+            if (take == 3) bb.Put(val, 10);
+            else if (take == 2) bb.Put(val, 7);
+            else bb.Put(val, 4);
+            i += take;
+        }
+    }
+
+    private static void EncodeAlphanumericData(string text, BitBuffer bb)
+    {
+        int i = 0;
+        while (i < text.Length)
+        {
+            if (i + 1 < text.Length)
+            {
+                int val = AlphaChars.IndexOf(char.ToUpperInvariant(text[i])) * 45 + AlphaChars.IndexOf(char.ToUpperInvariant(text[i + 1]));
+                bb.Put(val, 11);
+                i += 2;
+            }
+            else
+            {
+                int val = AlphaChars.IndexOf(char.ToUpperInvariant(text[i]));
+                bb.Put(val, 6);
+                i++;
+            }
+        }
+    }
+
+    private static void EncodeByteData(string text, BitBuffer bb)
+    {
+        byte[] bs = Encoding.UTF8.GetBytes(text);
+        foreach (byte b in bs) bb.Put(b, 8);
+    }
+
+    private static void EncodeKanjiData(string text, BitBuffer bb)
+    {
+        Encoding shiftJis = Encoding.GetEncoding("shift_jis");
+        byte[] sj = shiftJis.GetBytes(text);
+        for (int i = 0; i < sj.Length; i += 2)
+        {
+            int val = ((sj[i] & 0xFF) << 8) | (sj[i + 1] & 0xFF);
+            int adjusted = (val >= 0x8140 && val <= 0x9FFC) ? val - 0x8140 : val - 0xC140;
+            int msb = (adjusted >> 8) & 0xFF;
+            int lsb = adjusted & 0xFF;
+            int final = msb * 0xC0 + lsb;
+            bb.Put(final, 13);
+        }
     }
 
     // ---------------------------
@@ -308,10 +322,12 @@ public static class Generator
     private static List<bool> ExtractBits(byte[] finalCodewords)
     {
         List<bool> bits = [];
+
         foreach (byte b in finalCodewords)
         {
             for (int i = 7; i >= 0; i--) bits.Add(((b >> i) & 1) == 1);
         }
+
         return bits;
     }
 
@@ -323,12 +339,19 @@ public static class Generator
             for (int xi = 0; xi < 2; xi++)
             {
                 int xx = x - xi;
-                if (matrix[yy, xx].HasValue) continue; // function or already set
+
+                if (matrix[yy, xx].HasValue)
+                    continue; // function or already set
+
                 bool value = false;
-                if (bitIndex < bits.Count) value = bits[bitIndex++];
+
+                if (bitIndex < bits.Count)
+                    value = bits[bitIndex++];
+
                 matrix[yy, xx] = value;
             }
         }
+
         return bitIndex;
     }
 
@@ -348,7 +371,7 @@ public static class Generator
     {
         int s = template.GetLength(0);
         bool[,] outm = new bool[s, s];
-        
+
         for (int y = 0; y < s; y++)
             for (int x = 0; x < s; x++)
                 outm[y, x] = template[y, x].GetValueOrDefault(false);
