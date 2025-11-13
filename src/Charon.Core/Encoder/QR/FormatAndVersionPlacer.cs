@@ -60,8 +60,6 @@ static class FormatAndVersionPlacer
         // format bits = 5 bits (ECC + mask) -> BCH -> xor with mask 0x5412
         int eccBits = EccFormatBits[ecc] << 3;
         int data = eccBits | mask;
-        int g = 0x537; // generator polynomial? In spec generator for format is 0x537?
-                       // For correctness, use standard algorithm to compute BCH(15,5) with polynomial x^10 + x^8 + x^5 + x^4 + x^2 + x + 1 (0x537)
         int d = data << 10;
         int p = 0x537;
 
