@@ -92,7 +92,7 @@ public static partial class Service
     }
 
     [SupportedOSPlatform(nameof(OSPlatform.Linux))]
-    private static async void CheckControllerDebian(IShellOptions shellOptions)
+    private static async Task CheckControllerDebian(IShellOptions shellOptions)
     {
         Log.Information("Checking systemd version...");
 
@@ -108,8 +108,7 @@ public static partial class Service
         var running = ExtractVersion(runningVersion);
         var installed = ExtractInstalledVersion(installedVersion);
 
-        Log.Information("Running systemd version:   {Running}", running);
-        Log.Information("Installed systemd version: {Installed}", installed);
+        Log.Information("Running systemd version: {Running}, installed: {Installed}", running, installed);
 
         if (string.Compare(running, installed, StringComparison.Ordinal) == 0)
             return;

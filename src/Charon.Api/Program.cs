@@ -18,7 +18,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var validIssuer = jwtSettings["ValidIssuer"];
         var validAudience = jwtSettings["ValidAudience"];
-        
+
         // use [Authorize] to protect endpoints
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -51,4 +51,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync(CancellationToken.None);

@@ -146,7 +146,7 @@ namespace Charon.System
 
             var output = await process.StandardOutput.ReadToEndAsync();
 
-            process.WaitForExit();
+            await process.WaitForExitAsync(CancellationToken.None);
 
             return output;
         }

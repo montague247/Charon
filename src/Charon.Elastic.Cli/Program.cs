@@ -1,5 +1,4 @@
-﻿using Charon.Elastic;
-using Charon.Elastic.Bootstrap;
+﻿using Charon.Elastic.Bootstrap;
 
 await Console.Out.WriteLineAsync(@"
    _____ _                             ______ _           _   _         _____ _      _____ 
@@ -8,7 +7,6 @@ await Console.Out.WriteLineAsync(@"
  | |    | '_ \ / _` | '__/ _ \| '_ \  |  __| | |/ _` / __| __| |/ __| | |    | |      | |  
  | |____| | | | (_| | | | (_) | | | | | |____| | (_| \__ \ |_| | (__  | |____| |____ _| |_ 
   \_____|_| |_|\__,_|_|  \___/|_| |_| |______|_|\__,_|___/\__|_|\___|  \_____|______|_____|
-                                                                                           
 ");
 
 await Bootstrapper.Execute(args, CancellationToken.None);

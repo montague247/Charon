@@ -1,6 +1,6 @@
 ﻿using Charon.Dojo;
 
-Console.Out.WriteLine(@"
+await Console.Out.WriteLineAsync(@"
  _____ _                             _____  _     _____ 
 /  __ \ |                           /  __ \| |   |_   _|
 | /  \/ |__   __ _ _ __ ___  _ __   | /  \/| |     | |  
