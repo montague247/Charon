@@ -118,7 +118,7 @@ public static class Generator
         catch { /* platform may not support shift_jis - ignore */ }
 
         bool numeric = text.All(c => c >= '0' && c <= '9');
-        
+
         if (numeric)
             return Mode.Numeric;
 
@@ -286,53 +286,73 @@ public static class Generator
     private static void PlaceDataBits(bool?[,] matrix, byte[] finalCodewords)
     {
         int size = matrix.GetLength(0);
-        List<bool> bits = new List<bool>();
-        foreach (byte b in finalCodewords)
-        {
-            for (int i = 7; i >= 0; i--) bits.Add(((b >> i) & 1) == 1);
-        }
+        List<bool> bits = ExtractBits(finalCodewords);
 
         int bitIndex = 0;
         int x = size - 1;
-        int y = size - 1;
         int dir = -1; // up=-1, down=+1
 
         while (x > 0)
         {
             if (x == 6) x--; // skip vertical timing column
 
-            for (int i = 0; i < size; i++)
-            {
-                int yy = dir == -1 ? size - 1 - i : i;
-                for (int xi = 0; xi < 2; xi++)
-                {
-                    int xx = x - xi;
-                    if (matrix[yy, xx].HasValue) continue; // function or already set
-                    bool value = false;
-                    if (bitIndex < bits.Count) value = bits[bitIndex++];
-                    matrix[yy, xx] = value;
-                }
-            }
+            bitIndex = PlaceColumnBits(matrix, bits, size, x, dir, bitIndex);
 
             x -= 2;
             dir = -dir;
         }
 
-        // Any unset data modules should be white
-        for (int yy = 0; yy < size; yy++)
-            for (int xx = 0; xx < size; xx++)
-                if (!matrix[yy, xx].HasValue)
-                    matrix[yy, xx] = false;
+        FillUnsetModules(matrix, size);
     }
 
-    // Convert current nullable matrix (with fixed modules marked) to bool[,] and fill unset with white(false)
-    private static bool[,] ConvertNullableToBool(bool?[,] template, bool fillUnsetWhite)
+    private static List<bool> ExtractBits(byte[] finalCodewords)
+    {
+        List<bool> bits = [];
+        foreach (byte b in finalCodewords)
+        {
+            for (int i = 7; i >= 0; i--) bits.Add(((b >> i) & 1) == 1);
+        }
+        return bits;
+    }
+
+    private static int PlaceColumnBits(bool?[,] matrix, List<bool> bits, int size, int x, int dir, int bitIndex)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            int yy = dir == -1 ? size - 1 - i : i;
+            for (int xi = 0; xi < 2; xi++)
+            {
+                int xx = x - xi;
+                if (matrix[yy, xx].HasValue) continue; // function or already set
+                bool value = false;
+                if (bitIndex < bits.Count) value = bits[bitIndex++];
+                matrix[yy, xx] = value;
+            }
+        }
+        return bitIndex;
+    }
+
+    private static void FillUnsetModules(bool?[,] matrix, int size)
+    {
+        for (int yy = 0; yy < size; yy++)
+        {
+            for (int xx = 0; xx < size; xx++)
+            {
+                if (!matrix[yy, xx].HasValue)
+                    matrix[yy, xx] = false;
+            }
+        }
+    }
+
+    private static bool[,] ConvertNullableToBool(bool?[,] template)
     {
         int s = template.GetLength(0);
         bool[,] outm = new bool[s, s];
+        
         for (int y = 0; y < s; y++)
             for (int x = 0; x < s; x++)
                 outm[y, x] = template[y, x].GetValueOrDefault(false);
+
         return outm;
     }
 

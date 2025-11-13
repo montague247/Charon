@@ -13,9 +13,12 @@ static class MaskEvaluator
     public static bool[,] ApplyMask(bool[,] matrix, int maskPattern)
     {
         int n = matrix.GetLength(0);
-        if (n != matrix.GetLength(1)) throw new ArgumentException("Matrix must be square.");
+
+        if (n != matrix.GetLength(1))
+            throw new ArgumentException("Matrix must be square.");
 
         bool[,] result = new bool[n, n];
+
         for (int r = 0; r < n; r++)
         {
             for (int c = 0; c < n; c++)
@@ -25,6 +28,7 @@ static class MaskEvaluator
                 result[r, c] = maskBit ? !matrix[r, c] : matrix[r, c];
             }
         }
+
         return result;
     }
 
@@ -37,7 +41,7 @@ static class MaskEvaluator
     public static (int bestMask, bool[,] maskedMatrix, int penalty) SelectBestMask(bool[,] baseMatrix)
     {
         int bestMask = 0;
-        bool[,] bestMatrix = null;
+        bool[,]? bestMatrix = null;
         int bestPenalty = int.MaxValue;
 
         for (int mask = 0; mask < 8; mask++)
@@ -60,12 +64,13 @@ static class MaskEvaluator
     /// </summary>
     public static int CalculatePenalty(bool[,] matrix)
     {
-        int n = matrix.GetLength(0);
         int total = 0;
+
         total += PenaltyRule1(matrix);
         total += PenaltyRule2(matrix);
         total += PenaltyRule3(matrix);
         total += PenaltyRule4(matrix);
+
         return total;
     }
 
