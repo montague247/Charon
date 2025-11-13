@@ -85,5 +85,5 @@ public static class StringExtensions
         }
     }
 
-    public static Guid CreateGuid(this string value) => new(MD5.HashData(Encoding.UTF8.GetBytes(value)));
+    public static Guid CreateGuid(this string value) => new(MD5.HashData(Encoding.UTF8.GetBytes(value))); // NOSONAR
 }
