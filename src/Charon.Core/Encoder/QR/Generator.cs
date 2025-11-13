@@ -19,9 +19,6 @@ public static class Generator
         // Detect mode (choose best single mode for simplicity). Could be extended to mix modes.
         var mode = ChooseMode(text);
 
-        // Encode data bits (raw bitstring)
-        byte[] dataBytes = Encoding.UTF8.GetBytes(text);
-
         // Find minimal version that fits
         int version = ChooseVersion(text, mode, eccLevel);
 
@@ -61,7 +58,7 @@ public static class Generator
             bool[,] copy = ConvertNullableToBool(matrix); // copy of fixed modules with false for unset
 
             ApplyDataMask(copy, matrix, mask);
-            
+
             FormatAndVersionPlacer.PlaceFormatAndVersion(copy, eccLevel, mask, version);
 
             int penalty = MaskEvaluator.CalculatePenalty(copy);

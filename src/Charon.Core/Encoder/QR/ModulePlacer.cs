@@ -83,30 +83,48 @@ static class ModulePlacer
         foreach (int r in locs)
             foreach (int c in locs)
             {
-                // skip if overlapping with finder patterns
-                if ((r == 6 && (c == 6 || c == m.GetLength(0) - 7 || c == 0)) || (c == 6 && (r == 6 || r == m.GetLength(0) - 7 || r == 0))) continue;
-                // place 5x5 pattern centered at (r,c)
-                for (int dy = -2; dy <= 2; dy++)
-                    for (int dx = -2; dx <= 2; dx++)
-                    {
-                        int y = r + dy, x = c + dx;
-                        if (y < 0 || x < 0 || y >= m.GetLength(0) || x >= m.GetLength(0)) continue;
-                        bool val = Math.Max(Math.Abs(dx), Math.Abs(dy)) != 1; // rough approximation: outer 5x5 black/white pattern with center black and inner white ring
-                                                                              // Spec has exact pattern; for many encoders this simplified placement suffices for patterns
-                        m[y, x] = val;
-                    }
+                if (ShouldSkipFinderOverlap(m, r, c))
+                    continue;
+
+                Place5x5Pattern(m, r, c);
+            }
+    }
+
+    private static bool ShouldSkipFinderOverlap(bool?[,] m, int r, int c)
+    {
+        int size = m.GetLength(0);
+
+        return (r == 6 && (c == 6 || c == size - 7 || c == 0)) || (c == 6 && (r == 6 || r == size - 7 || r == 0));
+    }
+
+    private static void Place5x5Pattern(bool?[,] m, int centerRow, int centerCol)
+    {
+        int size = m.GetLength(0);
+
+        for (int dy = -2; dy <= 2; dy++)
+            for (int dx = -2; dx <= 2; dx++)
+            {
+                int y = centerRow + dy, x = centerCol + dx;
+
+                if (y < 0 || x < 0 || y >= size || x >= size)
+                    continue;
+
+                bool val = Math.Max(Math.Abs(dx), Math.Abs(dy)) != 1;
+                m[y, x] = val;
             }
     }
 
     private static void ReserveFormatAreas(bool?[,] m)
     {
         int s = m.GetLength(0);
+
         // format info adjacent to finders
         for (int i = 0; i <= 8; i++)
         {
             if (i != 6) m[8, i] = false; // will be overwritten by format
             if (i != 6) m[i, 8] = false;
         }
+
         for (int i = 0; i < 8; i++)
         {
             m[s - 1 - i, 8] = false;
@@ -117,9 +135,11 @@ static class ModulePlacer
     private static void ReserveVersionAreas(bool?[,] m)
     {
         int s = m.GetLength(0);
+
         // top-right
         for (int r = 0; r < 6; r++)
             for (int c = s - 11; c < s - 8; c++) m[r, c] = false;
+            
         // bottom-left
         for (int r = s - 11; r < s - 8; r++)
             for (int c = 0; c < 6; c++) m[r, c] = false;

@@ -169,32 +169,24 @@ static class VersionTables
 
     public static int GetCharacterCountIndicatorBits(int version, Mode mode)
     {
-        // per mode & version range
-        if (mode == Mode.Numeric)
+        return mode switch
         {
-            if (version <= 9) return 10;
-            if (version <= 26) return 12;
-            return 14;
-        }
-        if (mode == Mode.Alphanumeric)
-        {
-            if (version <= 9) return 9;
-            if (version <= 26) return 11;
-            return 13;
-        }
-        if (mode == Mode.Byte)
-        {
-            if (version <= 9) return 8;
-            if (version <= 26) return 16; // actually 16 only for Kanji? But spec: byte uses 8/16? Real spec: 8/16? In reality Byte uses 8/16/16; keep 8 for v1-9 as common case
-            return 16;
-        }
-        if (mode == Mode.Kanji)
-        {
-            if (version <= 9) return 8;
-            if (version <= 26) return 10;
-            return 12;
-        }
+            Mode.Numeric => GetBitsForVersion(version, 10, 12, 14),
+            Mode.Alphanumeric => GetBitsForVersion(version, 9, 11, 13),
+            Mode.Byte => GetBitsForVersion(version, 8, 16, 16),
+            Mode.Kanji => GetBitsForVersion(version, 8, 10, 12),
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), "Unsupported mode")
+        };
+    }
 
-        throw new ArgumentOutOfRangeException(nameof(mode), "Unsupported mode");
+    private static int GetBitsForVersion(int version, int low, int mid, int high)
+    {
+        if (version <= 9)
+            return low;
+
+        if (version <= 26)
+            return mid;
+
+        return high;
     }
 }

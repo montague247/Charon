@@ -107,47 +107,47 @@ static class MaskEvaluator
         int n = m.GetLength(0);
         int penalty = 0;
 
-        // Rows
+        // Calculate penalties for rows
         for (int r = 0; r < n; r++)
         {
-            int runCount = 1;
-            bool last = m[r, 0];
-
-            for (int c = 1; c < n; c++)
-            {
-                if (m[r, c] == last) runCount++;
-                else
-                {
-                    if (runCount >= 5) penalty += 3 + (runCount - 5);
-                    runCount = 1;
-                    last = m[r, c];
-                }
-            }
-
-            if (runCount >= 5)
-                penalty += 3 + (runCount - 5);
+            penalty += CalculateRunPenalty(m, n, r, isRow: true);
         }
 
-        // Columns
+        // Calculate penalties for columns
         for (int c = 0; c < n; c++)
         {
-            int runCount = 1;
-            bool last = m[0, c];
-
-            for (int r = 1; r < n; r++)
-            {
-                if (m[r, c] == last) runCount++;
-                else
-                {
-                    if (runCount >= 5) penalty += 3 + (runCount - 5);
-                    runCount = 1;
-                    last = m[r, c];
-                }
-            }
-
-            if (runCount >= 5)
-                penalty += 3 + (runCount - 5);
+            penalty += CalculateRunPenalty(m, n, c, isRow: false);
         }
+
+        return penalty;
+    }
+
+    private static int CalculateRunPenalty(bool[,] m, int n, int index, bool isRow)
+    {
+        int penalty = 0;
+        int runCount = 1;
+        bool last = isRow ? m[index, 0] : m[0, index];
+
+        for (int i = 1; i < n; i++)
+        {
+            bool current = isRow ? m[index, i] : m[i, index];
+
+            if (current == last)
+            {
+                runCount++;
+            }
+            else
+            {
+                if (runCount >= 5)
+                    penalty += 3 + (runCount - 5);
+
+                runCount = 1;
+                last = current;
+            }
+        }
+
+        if (runCount >= 5)
+            penalty += 3 + (runCount - 5);
 
         return penalty;
     }
@@ -157,6 +157,7 @@ static class MaskEvaluator
     {
         int n = m.GetLength(0);
         int penalty = 0;
+
         for (int r = 0; r < n - 1; r++)
         {
             for (int c = 0; c < n - 1; c++)
@@ -200,7 +201,9 @@ static class MaskEvaluator
                 {
                     bool preWhite = IsPreWhite(m, i, j, isRow);
                     bool postWhite = IsPostWhite(m, i, j, n, isRow);
-                    if (preWhite || postWhite) penalty += 40;
+
+                    if (preWhite || postWhite)
+                        penalty += 40;
                 }
             }
         }
