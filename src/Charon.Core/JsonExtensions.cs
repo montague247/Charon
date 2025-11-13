@@ -29,7 +29,7 @@ namespace Charon
 
         public static void ToJson<T>(this T value, string path, bool compact = false)
         {
-            if (value == null)
+            if (EqualityComparer<T>.Default.Equals(value, default))
                 return;
 
             using var sw = new StreamWriter(path, false, DefaultEncoding)
