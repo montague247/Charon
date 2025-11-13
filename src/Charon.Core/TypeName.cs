@@ -9,10 +9,18 @@ namespace Charon
         {
             { typeof(string), "string" },
             { typeof(int), "int" },
+            { typeof(int), "uint" },
             { typeof(long), "long" },
+            { typeof(ulong), "ulong" },
             { typeof(decimal), "decimal" },
             { typeof(bool), "bool" },
-            { typeof(byte), "byte" }
+            { typeof(byte), "byte" },
+            { typeof(sbyte), "sbyte" },
+            { typeof(short), "short" },
+            { typeof(short), "ushort" },
+            { typeof(float), "float" },
+            { typeof(double), "double" },
+            { typeof(char), "char" }
         };
         private readonly HashSet<string> _namespaces = [];
         private readonly Dictionary<Type, string> _cachedNames = [];
@@ -89,70 +97,71 @@ namespace Charon
             if (_cachedNames.TryGetValue(type, out var typeName))
                 return typeName;
 
-            if (_simpleTypes.TryGetValue(type, out typeName))
-            {
-                _cachedNames.TryAdd(type, typeName);
-
-                return typeName;
-            }
-
-            if (type.IsArray)
-            {
-                typeName = string.Concat(GetName(type.GetElementType()!), "[]");
-
-                _cachedNames.TryAdd(type, typeName);
-
-                return typeName;
-
-            }
-
-            if (type.IsGenericType)
-            {
-                var genericArguments = type.GetGenericArguments();
-
-                if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                {
-                    typeName = string.Concat(GetName(genericArguments[0]), '?');
-
-                    _cachedNames.TryAdd(type, typeName);
-
-                    return typeName;
-                }
-
-                var sb = new StringBuilder(type.Name.Substring(0, type.Name.IndexOf('`'))).Append('<');
-                var first = true;
-
-                foreach (var argumentType in genericArguments)
-                {
-                    if (first)
-                        first = false;
-                    else
-                        sb.Append(", ");
-
-                    sb.Append(GetName(argumentType));
-                }
-
-                typeName = sb.Append('>').ToString();
-            }
-            else
-                typeName = type.Name;
+            typeName = GetSimpleOrArrayTypeName(type) ?? GetGenericTypeName(type) ?? type.Name;
 
             var typeNamespace = type.Namespace!;
-
-            if (_namespaces.Contains(typeNamespace))
-            {
-                var types = AppDomain.CurrentDomain.GetAssemblies().Where(s => !s.IsDynamic).SelectMany(s => s.GetTypes()).Where(s => s.IsPublic && s.Namespace != null && _namespaces.Contains(s.Namespace)).OrderBy(s => s.FullName).ToArray();
-                var matchingTypes = types.Where(s => string.Compare(s.Name, type.Name, StringComparison.Ordinal) == 0).ToArray();
-
-                if (matchingTypes.Length > 1)
-                    typeName = string.Concat(type.Namespace, '.', typeName);
-            }
-            else
-                typeName = string.Concat(typeNamespace, '.', typeName);
+            typeName = ResolveNamespaceConflict(type, typeName, typeNamespace);
 
             _cachedNames.TryAdd(type, typeName);
 
             return typeName;
+        }
+
+        private string? GetSimpleOrArrayTypeName(Type type)
+        {
+            if (_simpleTypes.TryGetValue(type, out var typeName))
+                return typeName;
+
+            if (type.IsArray)
+                return string.Concat(GetName(type.GetElementType()!), "[]");
+
+            return null;
+        }
+
+        private string? GetGenericTypeName(Type type)
+        {
+            if (!type.IsGenericType)
+                return null;
+
+            var genericArguments = type.GetGenericArguments();
+
+            if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return string.Concat(GetName(genericArguments[0]), '?');
+
+            var sb = new StringBuilder(type.Name[..type.Name.IndexOf('`')]).Append('<');
+            var first = true;
+
+            foreach (var argumentType in genericArguments)
+            {
+                if (first)
+                    first = false;
+                else
+                    sb.Append(", ");
+
+                sb.Append(GetName(argumentType));
+            }
+
+            return sb.Append('>').ToString();
+        }
+
+        private string ResolveNamespaceConflict(Type type, string typeName, string typeNamespace)
+        {
+            if (_namespaces.Contains(typeNamespace))
+            {
+                var types = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(s => !s.IsDynamic)
+                    .SelectMany(s => s.GetTypes())
+                    .Where(s => s.IsPublic && s.Namespace != null && _namespaces.Contains(s.Namespace))
+                    .OrderBy(s => s.FullName)
+                    .ToArray();
+
+                var matchingTypes = types.Where(s => string.Compare(s.Name, type.Name, StringComparison.Ordinal) == 0).ToArray();
+
+                if (matchingTypes.Length > 1)
+                    return string.Concat(type.Namespace, '.', typeName);
+            }
+
+            return string.Concat(typeNamespace, '.', typeName);
         }
     }
 }
