@@ -251,13 +251,15 @@ namespace Charon.System
                 return;
             }
 
-            if (Execute("curl", ["-fsSL", "https://deb.nodesource.com/setup_lts.x", "-o", "/tmp/nodesource_setup.sh"]) != 0)
+            var tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            if (Execute("curl", ["-fsSL", "https://deb.nodesource.com/setup_lts.x", "-o", tempPath]) != 0)
             {
                 Log.Error("Failed to download Node.js setup script.");
                 return;
             }
 
-            SudoExecute("bash", ["/tmp/nodesource_setup.sh"], shellOptions);
+            SudoExecute("bash", [tempPath], shellOptions);
             CheckInstall("nodejs", shellOptions);
 
             Log.Information("Node.js and npm have been installed.");
