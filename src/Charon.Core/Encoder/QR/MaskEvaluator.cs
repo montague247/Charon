@@ -41,13 +41,14 @@ static class MaskEvaluator
     public static (int bestMask, bool[,] maskedMatrix, int penalty) SelectBestMask(bool[,] baseMatrix)
     {
         int bestMask = 0;
-        bool[,]? bestMatrix = null;
-        int bestPenalty = int.MaxValue;
+        var bestMatrix = ApplyMask(baseMatrix, 0);
+        int bestPenalty = CalculatePenalty(bestMatrix);
 
-        for (int mask = 0; mask < 8; mask++)
+        for (int mask = 1; mask < 8; mask++)
         {
             bool[,] masked = ApplyMask(baseMatrix, mask);
             int penalty = CalculatePenalty(masked);
+
             if (penalty < bestPenalty)
             {
                 bestPenalty = penalty;
@@ -111,6 +112,7 @@ static class MaskEvaluator
         {
             int runCount = 1;
             bool last = m[r, 0];
+
             for (int c = 1; c < n; c++)
             {
                 if (m[r, c] == last) runCount++;
@@ -121,7 +123,9 @@ static class MaskEvaluator
                     last = m[r, c];
                 }
             }
-            if (runCount >= 5) penalty += 3 + (runCount - 5);
+
+            if (runCount >= 5)
+                penalty += 3 + (runCount - 5);
         }
 
         // Columns
@@ -129,6 +133,7 @@ static class MaskEvaluator
         {
             int runCount = 1;
             bool last = m[0, c];
+
             for (int r = 1; r < n; r++)
             {
                 if (m[r, c] == last) runCount++;
@@ -139,7 +144,9 @@ static class MaskEvaluator
                     last = m[r, c];
                 }
             }
-            if (runCount >= 5) penalty += 3 + (runCount - 5);
+
+            if (runCount >= 5)
+                penalty += 3 + (runCount - 5);
         }
 
         return penalty;
@@ -155,12 +162,14 @@ static class MaskEvaluator
             for (int c = 0; c < n - 1; c++)
             {
                 bool v = m[r, c];
+
                 if (m[r, c + 1] == v && m[r + 1, c] == v && m[r + 1, c + 1] == v)
                 {
                     penalty += 3;
                 }
             }
         }
+
         return penalty;
     }
 
@@ -170,32 +179,27 @@ static class MaskEvaluator
         int n = m.GetLength(0);
         int penalty = 0;
 
-        bool[] pattern = new bool[] { true, false, true, true, true, false, true };
-        bool[] inverse = new bool[] { false, true, false, false, false, true, false };
+        bool[] pattern = [true, false, true, true, true, false, true];
+        bool[] inverse = [false, true, false, false, false, true, false];
 
-        // Rows
-        for (int r = 0; r < n; r++)
-        {
-            for (int c = 0; c <= n - 7; c++)
-            {
-                if (MatchesPatternRow(m, r, c, pattern) || MatchesPatternRow(m, r, c, inverse))
-                {
-                    bool preWhite = c - 4 >= 0 && AllWhiteRowSegment(m, r, c - 4, 4);
-                    bool postWhite = c + 7 + 4 <= n && AllWhiteRowSegment(m, r, c + 7, 4);
-                    if (preWhite || postWhite) penalty += 40;
-                }
-            }
-        }
+        penalty += CalculatePatternPenalty(m, n, pattern, inverse, isRow: true);
+        penalty += CalculatePatternPenalty(m, n, pattern, inverse, isRow: false);
 
-        // Columns
-        for (int c = 0; c < n; c++)
+        return penalty;
+    }
+
+    private static int CalculatePatternPenalty(bool[,] m, int n, bool[] pattern, bool[] inverse, bool isRow)
+    {
+        int penalty = 0;
+
+        for (int i = 0; i < n; i++)
         {
-            for (int r = 0; r <= n - 7; r++)
+            for (int j = 0; j <= n - 7; j++)
             {
-                if (MatchesPatternCol(m, r, c, pattern) || MatchesPatternCol(m, r, c, inverse))
+                if (MatchesPattern(m, i, j, pattern, isRow) || MatchesPattern(m, i, j, inverse, isRow))
                 {
-                    bool preWhite = r - 4 >= 0 && AllWhiteColSegment(m, r - 4, c, 4);
-                    bool postWhite = r + 7 + 4 <= n && AllWhiteColSegment(m, r + 7, c, 4);
+                    bool preWhite = IsPreWhite(m, i, j, isRow);
+                    bool postWhite = IsPostWhite(m, i, j, n, isRow);
                     if (preWhite || postWhite) penalty += 40;
                 }
             }
@@ -204,24 +208,42 @@ static class MaskEvaluator
         return penalty;
     }
 
-    private static bool MatchesPatternRow(bool[,] m, int r, int startC, bool[] pattern)
+    private static bool MatchesPattern(bool[,] m, int i, int j, bool[] pattern, bool isRow)
     {
-        for (int k = 0; k < 7; k++) if (m[r, startC + k] != pattern[k]) return false;
+        for (int k = 0; k < 7; k++)
+        {
+            if ((isRow ? m[i, j + k] : m[j + k, i]) != pattern[k])
+                return false;
+        }
+
         return true;
     }
-    private static bool MatchesPatternCol(bool[,] m, int startR, int c, bool[] pattern)
+
+    private static bool IsPreWhite(bool[,] m, int i, int j, bool isRow)
     {
-        for (int k = 0; k < 7; k++) if (m[startR + k, c] != pattern[k]) return false;
-        return true;
+        return j - 4 >= 0 && (isRow ? AllWhiteRowSegment(m, i, j - 4, 4) : AllWhiteColSegment(m, j - 4, i, 4));
     }
+
+    private static bool IsPostWhite(bool[,] m, int i, int j, int n, bool isRow)
+    {
+        return j + 7 + 4 <= n && (isRow ? AllWhiteRowSegment(m, i, j + 7, 4) : AllWhiteColSegment(m, j + 7, i, 4));
+    }
+
     private static bool AllWhiteRowSegment(bool[,] m, int r, int startC, int length)
     {
-        for (int i = 0; i < length; i++) if (m[r, startC + i]) return false;
+        for (int i = 0; i < length; i++)
+            if (m[r, startC + i])
+                return false;
+                
         return true;
     }
+
     private static bool AllWhiteColSegment(bool[,] m, int startR, int c, int length)
     {
-        for (int i = 0; i < length; i++) if (m[startR + i, c]) return false;
+        for (int i = 0; i < length; i++)
+            if (m[startR + i, c])
+                return false;
+
         return true;
     }
 
@@ -231,12 +253,14 @@ static class MaskEvaluator
         int n = m.GetLength(0);
         int total = n * n;
         int dark = 0;
+
         for (int r = 0; r < n; r++)
             for (int c = 0; c < n; c++)
                 if (m[r, c]) dark++;
 
-        double percentDark = (dark * 100.0) / total;
+        double percentDark = dark * 100.0 / total;
         int fivePercentSteps = (int)(Math.Abs(percentDark - 50) / 5.0 + 0.0000001);
+
         return fivePercentSteps * 10;
     }
 
