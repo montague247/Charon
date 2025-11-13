@@ -6,6 +6,7 @@ namespace Charon.Core.Tests.Security
     public sealed class SecureEncryptTests
     {
         private static readonly SecurityLevel[] Levels = [
+            new SecurityLevel5(),
             new SecurityLevel4(),
             new SecurityLevel3(),
             new SecurityLevel2()
@@ -24,6 +25,7 @@ namespace Charon.Core.Tests.Security
         {
             Assert.False(SecureEncrypt.IsEncrypted(string.Empty));
             Assert.False(SecureEncrypt.IsEncrypted("foo"));
+            Assert.True(SecureEncrypt.IsEncrypted("{enc:sl5}"));
             Assert.True(SecureEncrypt.IsEncrypted("{enc:sl4}"));
             Assert.True(SecureEncrypt.IsEncrypted("{enc:sl3}"));
             Assert.True(SecureEncrypt.IsEncrypted("{enc:sl2}"));
@@ -34,17 +36,18 @@ namespace Charon.Core.Tests.Security
         {
             Assert.False(SecureEncrypt.IsSecureEncrypted(string.Empty));
             Assert.False(SecureEncrypt.IsSecureEncrypted("foo"));
-            Assert.True(SecureEncrypt.IsSecureEncrypted("{enc:sl4}"));
+            Assert.True(SecureEncrypt.IsSecureEncrypted("{enc:sl5}"));
+            Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl4}"));
             Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl3}"));
             Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl2}"));
         }
 
         [Fact]
-        public void EncryptSecuritySevel4()
+        public void EncryptSecure()
         {
             var actual = SecureEncrypt.Encrypt("abc", null);
             Debug.WriteLine(actual);
-            Assert.StartsWith("{enc:sl4}", actual);
+            Assert.StartsWith("{enc:sl5}", actual);
             Assert.True(actual.IsSecureEncrypted());
             Assert.Equal(693, actual.Length);
 
@@ -62,7 +65,7 @@ namespace Charon.Core.Tests.Security
         }
 
         [Fact]
-        public void DecryptSecuritySevel4()
+        public void DecryptSecure()
         {
             var encrypted = EncryptedValues[0];
             var actual = SecureEncrypt.Decrypt(encrypted);
@@ -88,7 +91,7 @@ namespace Charon.Core.Tests.Security
             {
                 var securityLevel = Levels[i];
 
-                var encrypted = EncryptedValues.Single(v => securityLevel.Match(v));
+                var encrypted = EncryptedValues.Single(securityLevel.Match);
                 var actual = SecureEncrypt.Decrypt(encrypted, new NullHashPrivateKeyRetriever());
 
                 Assert.Equal("abc", actual);
@@ -135,7 +138,7 @@ namespace Charon.Core.Tests.Security
         public void EncryptVeryLong()
         {
             var actual = SecureEncrypt.Encrypt("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!\"§$%&/()=?`´ß+ü*Ü#äö'ÄÖ@-.,_:;<>€^°\\abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!\"§$%&/()=?`´ß+ü*Ü#äö'ÄÖ@-.,_:;<>€^°\\", null);
-            Assert.StartsWith("{enc:sl4}", actual);
+            Assert.StartsWith("{enc:sl5}", actual);
             Assert.True(actual.IsSecureEncrypted());
             Debug.WriteLine(actual);
             Assert.Equal(2063, actual.Length);

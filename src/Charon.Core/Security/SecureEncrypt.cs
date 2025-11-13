@@ -8,6 +8,7 @@ public static partial class SecureEncrypt
 {
     private static readonly SecurityLevel[] _levels =
     [
+            new SecurityLevel5(),
             new SecurityLevel4(),
             new SecurityLevel3(),
             new SecurityLevel2()

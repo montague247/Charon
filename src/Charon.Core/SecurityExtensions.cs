@@ -73,7 +73,7 @@ public static class SecurityExtensions
             salt.Length == 0)
             return hash;
 
-        var derivedBytes = new Rfc2898DeriveBytes(hash.SecureHash().Veil(salt), salt, 50000, HashAlgorithmName.SHA512).GetBytes(128);
+        var derivedBytes = new Rfc2898DeriveBytes(hash.SecureHash().Veil(salt), salt, 100000, HashAlgorithmName.SHA512).GetBytes(128);
 
         return derivedBytes.Veil(salt);
     }
