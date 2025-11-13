@@ -5,19 +5,21 @@ namespace Charon.Security;
 
 public sealed class SecurityLevel5 : SecurityLevel
 {
-    private const int ProviderKeySize = 2048;
-    private const int DeriveBytesIterations = 100000;
-    private const int DerivedBytesLength = 128;
-    private readonly HashAlgorithmName DeriveBytesHashAlgorithmName = HashAlgorithmName.SHA512; // create new level with SHA3_512 if supported on Mac
-    private readonly RSAEncryptionPadding SecureEncryptionPadding = RSAEncryptionPadding.OaepSHA1;
-
     public SecurityLevel5() : base(5)
     {
     }
 
+    protected override int KeySize => 2048;
+
+    protected override int DeriveBytesIterations => 100000;
+
+    protected override HashAlgorithmName DeriveBytesHashAlgorithmName => HashAlgorithmName.SHA512;
+
+    protected override int DerivedBytesLength => 128;
+
     protected override byte[] EncryptValue(string value, byte[] key)
     {
-        using var crypto = new RSACryptoServiceProvider(ProviderKeySize);
+        using var crypto = new RSACryptoServiceProvider(KeySize);
 
         crypto.ImportCspBlob(key);
 
@@ -27,11 +29,6 @@ public sealed class SecurityLevel5 : SecurityLevel
 
         salted.AddRange(Encoding.UTF8.GetBytes(value).Veil(derivedBytes));
 
-        return crypto.Encrypt(salted.ToArray(), SecureEncryptionPadding);
-    }
-
-    protected override string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash)
-    {
-        return DecryptValue(encrypted, key, hash, ProviderKeySize, SecureEncryptionPadding, DeriveBytesIterations, DeriveBytesHashAlgorithmName, DerivedBytesLength);      
+        return crypto.Encrypt(salted.ToArray(), EncryptionPadding);
     }
 }

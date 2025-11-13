@@ -1,14 +1,26 @@
 using System.Security.Cryptography;
 using System.Text;
+using Serilog.Events;
 
 namespace Charon.Security;
 
 public abstract class SecurityLevel(int level, int maxLength = 127, int saltLength = 30)
 {
     public const int MinEncryptedValueLength = 9;
+
     private readonly int _saltLength = saltLength;
     private readonly int _maxValueLength = maxLength - saltLength;
     private readonly string _prefix = string.Concat("{enc:sl", level, "}");
+
+    protected abstract int KeySize { get; }
+
+    protected RSAEncryptionPadding EncryptionPadding { get; } = RSAEncryptionPadding.OaepSHA1;
+
+    protected abstract int DeriveBytesIterations { get; }
+
+    protected abstract HashAlgorithmName DeriveBytesHashAlgorithmName { get; }
+
+    protected abstract int DerivedBytesLength { get; }
 
     public bool Match(string value) => value.StartsWith(_prefix, StringComparison.Ordinal);
 
@@ -90,15 +102,15 @@ public abstract class SecurityLevel(int level, int maxLength = 127, int saltLeng
         return none;
     }
 
-    protected string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash, int keySize, RSAEncryptionPadding encryptionPadding, int deriveBytesIterations, HashAlgorithmName deriveBytesHashAlgorithmName, int derivedBytesLength)
+    protected virtual string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash)
     {
-        using var crypto = new RSACryptoServiceProvider(keySize);
+        using var crypto = new RSACryptoServiceProvider(KeySize);
         crypto.ImportCspBlob(hash == null ? key : key.Unveil(hash.Secure()!));
 
-        var decrypted = crypto.Decrypt(encrypted, encryptionPadding);
+        var decrypted = crypto.Decrypt(encrypted, EncryptionPadding);
         decrypted = RemoveSalt(decrypted, out byte[] salt);
 
-        var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, deriveBytesIterations, deriveBytesHashAlgorithmName).GetBytes(derivedBytesLength);
+        var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName).GetBytes(DerivedBytesLength);
 
         return Encoding.UTF8.GetString(decrypted.Unveil(derivedBytes));
     }
@@ -107,8 +119,6 @@ public abstract class SecurityLevel(int level, int maxLength = 127, int saltLeng
     {
         throw new NotImplementedException();
     }
-
-    protected abstract string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash);
 
     private string DecryptValue(string value, byte[] key, byte[]? hash)
     {

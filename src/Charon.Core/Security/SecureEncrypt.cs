@@ -23,13 +23,7 @@ public static partial class SecureEncrypt
         if (string.IsNullOrEmpty(value))
             return false;
 
-        foreach (var level in _levels)
-        {
-            if (level.Match(value))
-                return true;
-        }
-
-        return false;
+        return _levels.Any(s => s.Match(value));
     }
 
     public static bool IsSecureEncrypted(this string? value)

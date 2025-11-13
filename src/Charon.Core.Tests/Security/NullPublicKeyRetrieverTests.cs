@@ -9,7 +9,6 @@ namespace Charon.Core.Tests.Security
         {
             var retriever = new NullPublicKeyRetriever();
             Assert.Equal("DEV", retriever.DefaultStage);
-            Assert.Equal(-1, retriever.KeySize);
             Assert.Null(retriever.GetKey("any"));
             Assert.Null(retriever.GetKey("DEV"));
         }

@@ -12,9 +12,18 @@ public sealed class SecurityLevel2 : SecurityLevel
     {
     }
 
+    protected override int KeySize => throw new NotImplementedException();
+
+    protected override int DeriveBytesIterations => throw new NotImplementedException();
+
+    protected override HashAlgorithmName DeriveBytesHashAlgorithmName => throw new NotImplementedException();
+
+    protected override int DerivedBytesLength => throw new NotImplementedException();
+
     protected override string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash)
     {
-        using var crypto = new RSACryptoServiceProvider(ProviderKeySize);
+        using var crypto = new RSACryptoServiceProvider(ProviderKeySize); // NOSONAR
+
         crypto.ImportCspBlob(hash == null ? key : key.Unveil(hash.Secure()!));
 
         var salted = crypto.Decrypt(encrypted, SecureEncryptionPadding);

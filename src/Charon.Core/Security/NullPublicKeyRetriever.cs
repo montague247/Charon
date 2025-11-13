@@ -7,8 +7,6 @@ namespace Charon.Security
     {
         public string DefaultStage => LocalEnvironment.Instance.Stage;
 
-        public int KeySize => -1;
-
         public byte[]? GetKey(string stage) => null;
     }
 }
