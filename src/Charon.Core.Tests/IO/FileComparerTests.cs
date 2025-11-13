@@ -152,7 +152,7 @@ namespace Charon.Core.Tests.IO
                     throw new IOException();
             }));
 
-            var cts = new CancellationTokenSource();
+            using var cts = new CancellationTokenSource();
             count = 0;
 
             Assert.False(FileComparer.Move(sourcePath, targetPath, cts.Token, 1, () =>
@@ -199,6 +199,10 @@ namespace Charon.Core.Tests.IO
 
             var version = "4711";
             var fc = new FileComparer(path, version);
+
+            Assert.NotNull(fc);
+            Assert.True(fc.Changed);
+            fc.Success();
         }
     }
 }
