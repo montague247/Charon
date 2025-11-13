@@ -7,6 +7,8 @@ namespace Charon.System;
 
 public static partial class Service
 {
+    private const string SystemController = "systemctl";
+
     [GeneratedRegex(@"systemd (\d+)")]
     private static partial Regex SystemdRegex();
 
@@ -28,10 +30,10 @@ public static partial class Service
         PerformAction(serviceName, shellOptions, ServiceAction.Restart, checkEnabled);
     }
 
-    public static void CheckController(IShellOptions shellOptions)
+    public static async Task CheckController(IShellOptions shellOptions)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && Shell.IsDebianBased())
-            CheckControllerDebian(shellOptions);
+            await CheckControllerDebian(shellOptions);
     }
 
     private static void PerformAction(string serviceName, IShellOptions shellOptions, ServiceAction action, bool checkEnabled = true)
@@ -56,16 +58,16 @@ public static partial class Service
     {
         if (checkEnabled)
         {
-            var status = Shell.Execute("systemctl", ["is-enabled", serviceName]);
+            var status = Shell.Execute(SystemController, ["is-enabled", serviceName]);
 
             if (status != 0)
             {
-                Shell.SudoExecute("systemctl", ["enable", serviceName], shellOptions);
+                Shell.SudoExecute(SystemController, ["enable", serviceName], shellOptions);
             }
         }
 
-        Shell.SudoExecute("systemctl", [action.ToString().ToLower(), serviceName], shellOptions);
-        Shell.SudoExecute("systemctl", ["status", serviceName], shellOptions);
+        Shell.SudoExecute(SystemController, [action.ToString().ToLower(), serviceName], shellOptions);
+        Shell.SudoExecute(SystemController, ["status", serviceName], shellOptions);
     }
 
     [SupportedOSPlatform(nameof(OSPlatform.Windows))]
@@ -96,7 +98,7 @@ public static partial class Service
     {
         Log.Information("Checking systemd version...");
 
-        var runningVersion = await Shell.GetOutput("systemctl", ["--version"]);
+        var runningVersion = await Shell.GetOutput(SystemController, ["--version"]);
         var installedVersion = await Shell.GetOutput("dpkg", ["-s", "systemd"]);
 
         if (runningVersion == null || installedVersion == null)
@@ -115,7 +117,7 @@ public static partial class Service
 
         Log.Warning("Running systemd version does not match installed version. Running: {Running}, Installed: {Installed} => reexecute", running, installed);
 
-        Shell.SudoExecute("systemctl", ["daemon-reexec"], shellOptions);
+        Shell.SudoExecute(SystemController, ["daemon-reexec"], shellOptions);
     }
 
     private static string? ExtractVersion(string input)
