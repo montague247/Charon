@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Charon.Security;
@@ -89,7 +90,23 @@ public abstract class SecurityLevel(int level, int maxLength = 127, int saltLeng
         return none;
     }
 
-    protected abstract byte[] EncryptValue(string value, byte[] key);
+    protected string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash, int keySize, RSAEncryptionPadding encryptionPadding, int deriveBytesIterations, HashAlgorithmName deriveBytesHashAlgorithmName, int derivedBytesLength)
+    {
+        using var crypto = new RSACryptoServiceProvider(keySize);
+        crypto.ImportCspBlob(hash == null ? key : key.Unveil(hash.Secure()!));
+
+        var decrypted = crypto.Decrypt(encrypted, encryptionPadding);
+        decrypted = RemoveSalt(decrypted, out byte[] salt);
+
+        var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, deriveBytesIterations, deriveBytesHashAlgorithmName).GetBytes(derivedBytesLength);
+
+        return Encoding.UTF8.GetString(decrypted.Unveil(derivedBytes));
+    }
+
+    protected virtual byte[] EncryptValue(string value, byte[] key)
+    {
+        throw new NotImplementedException();
+    }
 
     protected abstract string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash);
 

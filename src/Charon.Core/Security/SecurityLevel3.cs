@@ -14,11 +14,6 @@ public sealed class SecurityLevel3 : SecurityLevel
     {
     }
 
-    protected override byte[] EncryptValue(string value, byte[] key)
-    {
-        throw new NotImplementedException();
-    }
-
     protected override string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash)
     {
         using var crypto = new RSACryptoServiceProvider(ProviderKeySize);

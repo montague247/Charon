@@ -15,21 +15,8 @@ public sealed class SecurityLevel4 : SecurityLevel
     {
     }
 
-    protected override byte[] EncryptValue(string value, byte[] key)
-    {
-        throw new NotImplementedException();
-    }
-
     protected override string DecryptValue(byte[] encrypted, byte[] key, byte[]? hash)
     {
-        using var crypto = new RSACryptoServiceProvider(ProviderKeySize);
-        crypto.ImportCspBlob(hash == null ? key : key.Unveil(hash.Secure()!));
-
-        var decrypted = crypto.Decrypt(encrypted, SecureEncryptionPadding);
-        decrypted = RemoveSalt(decrypted, out byte[] salt);
-
-        var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName).GetBytes(DerivedBytesLength);
-
-        return Encoding.UTF8.GetString(decrypted.Unveil(derivedBytes));
+        return DecryptValue(encrypted, key, hash, ProviderKeySize, SecureEncryptionPadding, DeriveBytesIterations, DeriveBytesHashAlgorithmName, DerivedBytesLength);
     }
 }
