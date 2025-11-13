@@ -39,7 +39,7 @@ const items = [
 export function AppSidebar() {
     const { data: session } = useSession();
 
-    if (!session || !session.user)
+    if (!session?.user)
         return null;
 
     return (

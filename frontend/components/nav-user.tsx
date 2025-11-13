@@ -5,8 +5,7 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
-  LogOut,
-  Sparkles,
+  LogOut
 } from "lucide-react"
 
 import {
@@ -21,24 +20,24 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  useSidebar
 } from "@/components/ui/sidebar"
 
 export function NavUser({
   user,
-}: {
+}: Readonly<{
   user: {
-    name?: string | null | undefined
-    email?: string | null | undefined
-    image?: string | null | undefined
+    name?: string | null
+    email?: string | null
+    image?: string | null
   }
-}) {
+}>) {
   const { isMobile } = useSidebar()
 
   return (
