@@ -27,7 +27,7 @@ namespace Charon.Dojo.ProcessorExtensions
                 {
                     Log.Information("Load key from '{Path}'...", keyPath);
 
-                    cryptoServiceProvider = new RSACryptoServiceProvider();
+                    cryptoServiceProvider = new RSACryptoServiceProvider(2048);
                     cryptoServiceProvider.FromXmlString(File.ReadAllText(keyPath));
                 }
                 else
