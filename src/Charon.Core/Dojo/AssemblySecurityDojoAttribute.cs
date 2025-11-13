@@ -27,12 +27,12 @@ namespace Charon.Dojo
             if (Namespace != null)
                 return;
 
-            var name = assembly.GetName().Name!;
+            var assemblyName = assembly.GetName().Name!;
 
             if (string.IsNullOrEmpty(Path))
-                Namespace = name;
+                Namespace = assemblyName;
             else
-                Namespace = string.Concat(name, '.', Path.Replace(global::System.IO.Path.DirectorySeparatorChar, '.'));
+                Namespace = string.Concat(assemblyName, '.', Path.Replace(global::System.IO.Path.DirectorySeparatorChar, '.'));
         }
     }
 }
