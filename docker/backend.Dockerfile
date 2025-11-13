@@ -6,7 +6,6 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["Charon.Api/Charon.Api.csproj", "Charon.Api/"]
 RUN dotnet restore "Charon.Api/Charon.Api.csproj"
-COPY . .
 WORKDIR "/src/Charon.Api"
 RUN dotnet build -c Release -o /app/build
 
