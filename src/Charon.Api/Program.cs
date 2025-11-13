@@ -18,7 +18,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var validIssuer = jwtSettings["ValidIssuer"];
         var validAudience = jwtSettings["ValidAudience"];
-
+        
         // use [Authorize] to protect endpoints
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -28,8 +28,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = validIssuer,
             ValidAudience = validAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings["Secret"] ?? "YOUR_SECRET_KEY"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!))
         };
     });
 
