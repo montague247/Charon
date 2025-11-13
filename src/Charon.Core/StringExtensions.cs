@@ -49,18 +49,12 @@ public static class StringExtensions
         if (string.IsNullOrEmpty(value))
             return false;
 
-        foreach (var c in value)
-        {
-            if (c == '\n' ||
-                c == '\r' ||
-                c == '\t' ||
-                c == '\\' ||
-                c == '\0' ||
-                c == '"')
-                return true;
-        }
-
-        return false;
+        return value.Any(c => c == '\n' ||
+                        c == '\r' ||
+                        c == '\t' ||
+                        c == '\\' ||
+                        c == '\0' ||
+                        c == '"');
     }
 
     public static string? ToEscapedString(this string? value, bool singleLine = true)

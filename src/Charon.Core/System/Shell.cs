@@ -6,6 +6,7 @@ namespace Charon.System
     public static class Shell
     {
         public const string AptGetCommand = "apt-get";
+        private const string Bash = "/bin/bash";
 
         private static HashSet<string>? _installedTools;
 
@@ -78,8 +79,7 @@ namespace Charon.System
             var bashArguments = new List<string> { command, fileName };
             bashArguments.AddRange(arguments);
 
-            // Arguments = string.Format("-c \"sudo {0} {1} {2}\"", "/path/to/script", "arg1", arg2)
-            return Execute("/bin/bash", workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
+            return Execute(Bash, workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
         }
 
         public static int BashExecute(List<string> bashArguments, bool verbose = false)
@@ -89,7 +89,7 @@ namespace Charon.System
 
         public static int BashExecute(string workingDirectory, List<string> bashArguments, bool verbose = false)
         {
-            return Execute("/bin/bash", workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
+            return Execute(Bash, workingDirectory, ["-c", string.Join(' ', bashArguments)], verbose);
         }
 
         public static int BashExecute(string arguments, bool verbose = false)
@@ -99,7 +99,7 @@ namespace Charon.System
 
         public static int BashExecute(string arguments, string workingDirectory, bool verbose = false)
         {
-            return Execute("/bin/bash", workingDirectory, ["-c", arguments], verbose);
+            return Execute(Bash, workingDirectory, ["-c", arguments], verbose);
         }
 
         public static int SudoExecute(string fileName, List<string> arguments, IShellOptions shellOptions, bool verbose = false)
@@ -153,12 +153,12 @@ namespace Charon.System
 
         public static async Task<string?> GetBashOutput(List<string> bashArguments, bool standardOutput = true, bool verbose = false)
         {
-            return await GetOutput("/bin/bash", ["-c", string.Join(' ', bashArguments)], standardOutput, verbose);
+            return await GetOutput(Bash, ["-c", string.Join(' ', bashArguments)], standardOutput, verbose);
         }
 
         public static async Task<string?> GetBashOutput(string arguments, bool standardOutput = true, bool verbose = false)
         {
-            return await GetOutput("/bin/bash", ["-c", arguments], standardOutput, verbose);
+            return await GetOutput(Bash, ["-c", arguments], standardOutput, verbose);
         }
 
         public static bool IsCommandAvailable(string name)
