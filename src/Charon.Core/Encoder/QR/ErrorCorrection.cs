@@ -67,7 +67,7 @@ static class ErrorCorrection
 
         for (int i = 0; i < maxDataLen; i++)
         {
-            foreach (var (Data, Ecc) in blocks)
+            foreach (var (Data, _) in blocks)
             {
                 if (i < Data.Length)
                     outb.Add(Data[i]);
@@ -79,7 +79,7 @@ static class ErrorCorrection
 
         for (int i = 0; i < eccLen; i++)
         {
-            foreach (var (Data, Ecc) in blocks)
+            foreach (var (_, Ecc) in blocks)
             {
                 outb.Add(Ecc[i]);
             }
