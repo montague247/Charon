@@ -1,24 +1,21 @@
-using Serilog;
+namespace Charon.Dojo.Code;
 
-namespace Charon.Dojo.Code
+public sealed class CodeFileArguments
 {
-    public sealed class CodeFileArguments
+    public HashSet<string>? Usings { get; set; }
+
+    public string? NamespaceName { get; set; }
+
+    public TypeName TypeName { get; } = new();
+
+    public void AddUsing(string name)
     {
-        public HashSet<string>? Usings { get; set; }
+        TypeName.AddNamespace(name);
 
-        public string? NamespaceName { get; set; }
+        if (string.Compare(name, "System", StringComparison.Ordinal) == 0)
+            return;
 
-        public TypeName TypeName { get; } = new();
-
-        public void AddUsing(string name)
-        {
-            TypeName.AddNamespace(name);
-
-            if (string.Compare(name, "System", StringComparison.Ordinal) == 0)
-                return;
-
-            Usings ??= [];
-            Usings.Add(name);
-        }
+        Usings ??= [];
+        Usings.Add(name);
     }
 }

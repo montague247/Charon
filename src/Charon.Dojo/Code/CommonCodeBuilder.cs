@@ -1,48 +1,47 @@
-namespace Charon.Dojo.Code
+namespace Charon.Dojo.Code;
+
+public abstract class CommonCodeBuilder : IBuilder
 {
-    public abstract class CommonCodeBuilder : IBuilder
+    private readonly CodeWriter _writer;
+    private readonly CodeFileArguments _arguments;
+
+    protected CommonCodeBuilder(CodeWriter writer, CodeFileArguments arguments)
     {
-        private readonly CodeWriter _writer;
-        private readonly CodeFileArguments _arguments;
+        _writer = writer;
+        _arguments = arguments;
+    }
 
-        public CommonCodeBuilder(CodeWriter writer, CodeFileArguments arguments)
-        {
-            _writer = writer;
-            _arguments = arguments;
-        }
+    protected CommonCodeBuilder(CommonCodeBuilder commonCodeBuilder)
+    {
+        _writer = commonCodeBuilder._writer;
+        _arguments = commonCodeBuilder._arguments;
+    }
 
-        public CommonCodeBuilder(CommonCodeBuilder commonCodeBuilder)
-        {
-            _writer = commonCodeBuilder._writer;
-            _arguments = commonCodeBuilder._arguments;
-        }
+    public CodeFileArguments Arguments { get { return _arguments; } }
 
-        public CodeFileArguments Arguments { get { return _arguments; } }
+    public string Build() => _writer.Build();
 
-        public string Build() => _writer.Build();
+    public abstract void Build(IndentedWriter writer);
 
-        public abstract void Build(IndentedWriter writer);
+    public void ToFile(string path, CancellationToken cancellationToken) => _writer.ToFile(path, cancellationToken);
 
-        public void ToFile(string path, CancellationToken cancellationToken) => _writer.ToFile(path, cancellationToken);
+    public TypeBlock GetName<T>()
+    {
+        return GetName(typeof(T));
+    }
 
-        public TypeBlock GetName<T>()
-        {
-            return GetName(typeof(T));
-        }
+    public TypeBlock GetName(Type type)
+    {
+        if (!TypeName.IsSimple(type))
+            _arguments.AddUsing(type.Namespace!);
 
-        public TypeBlock GetName(Type type)
-        {
-            if (!TypeName.IsSimple(type))
-                _arguments.AddUsing(type.Namespace!);
+        return new TypeBlock(_arguments.TypeName, type);
+    }
 
-            return new TypeBlock(_arguments.TypeName, type);
-        }
+    public EnumBlock GetName(Enum e)
+    {
+        _arguments.AddUsing(e.GetType().Namespace!);
 
-        public EnumBlock GetName(Enum e)
-        {
-            _arguments.AddUsing(e.GetType().Namespace!);
-
-            return new EnumBlock(_arguments.TypeName, e);
-        }
+        return new EnumBlock(_arguments.TypeName, e);
     }
 }

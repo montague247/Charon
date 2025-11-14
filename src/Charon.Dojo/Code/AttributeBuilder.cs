@@ -1,55 +1,54 @@
 using System.Text;
 
-namespace Charon.Dojo.Code
+namespace Charon.Dojo.Code;
+
+public sealed class AttributeBuilder(CommonCodeBuilder commonCodeBuilder, AttributeArguments arguments) : CommonCodeBuilder(commonCodeBuilder)
 {
-    public sealed class AttributeBuilder(CommonCodeBuilder commonCodeBuilder, AttributeArguments arguments) : CommonCodeBuilder(commonCodeBuilder)
+    private readonly AttributeArguments _arguments = arguments;
+
+    public override void Build(IndentedWriter writer)
     {
-        private readonly AttributeArguments _arguments = arguments;
+        writer.WriteLine(BuildAttribute());
+    }
 
-        public override void Build(IndentedWriter writer)
+    private string BuildAttribute()
+    {
+        var typeName = _arguments.Type!.ToString()[..^9];
+        var sb = new StringBuilder("[").Append(typeName);
+
+        if (_arguments.Arguments != null &&
+            _arguments.Arguments.Count > 0)
         {
-            writer.WriteLine(BuildAttribute());
+            sb.Append('(');
+            AppendArguments(sb, _arguments.Arguments);
+            sb.Append(')');
         }
 
-        private string BuildAttribute()
+        return sb.Append(']').ToString();
+    }
+
+    private static void AppendArguments(StringBuilder sb, List<AttributeArgumentArguments> arguments)
+    {
+        var first = true;
+
+        foreach (var argument in arguments)
         {
-            var typeName = _arguments.Type!.ToString()[..^9];
-            var sb = new StringBuilder("[").Append(typeName);
+            if (first)
+                first = false;
+            else
+                sb.Append(", ");
 
-            if (_arguments.Arguments != null &&
-                _arguments.Arguments.Count > 0)
+            if (argument.Name != null)
             {
-                sb.Append('(');
-                AppendArguments(sb, _arguments.Arguments);
-                sb.Append(')');
-            }
+                sb.Append(argument.Name);
 
-            return sb.Append(']').ToString();
-        }
-
-        private static void AppendArguments(StringBuilder sb, List<AttributeArgumentArguments> arguments)
-        {
-            var first = true;
-
-            foreach (var argument in arguments)
-            {
-                if (first)
-                    first = false;
+                if (char.IsUpper(argument.Name[0]))
+                    sb.Append(" = ");
                 else
-                    sb.Append(", ");
-
-                if (argument.Name != null)
-                {
-                    sb.Append(argument.Name);
-
-                    if (char.IsUpper(argument.Name[0]))
-                        sb.Append(" = ");
-                    else
-                        sb.Append(": ");
-                }
-
-                sb.Append(argument.Value);
+                    sb.Append(": ");
             }
+
+            sb.Append(argument.Value);
         }
     }
 }

@@ -1,54 +1,53 @@
 using System.Text;
 
-namespace Charon.Dojo.Code
+namespace Charon.Dojo.Code;
+
+public sealed class MethodBuilder(CommonCodeBuilder commonCodeBuilder, MethodArguments arguments, CodeBuilder codeBuilder) : CommonCodeBuilder(commonCodeBuilder)
 {
-    public sealed class MethodBuilder(CommonCodeBuilder commonCodeBuilder, MethodArguments arguments, CodeBuilder codeBuilder) : CommonCodeBuilder(commonCodeBuilder)
+    private readonly MethodArguments _arguments = arguments;
+    private readonly CodeBuilder _codeBuilder = codeBuilder;
+
+    public override void Build(IndentedWriter writer)
     {
-        private readonly MethodArguments _arguments = arguments;
-        private readonly CodeBuilder _codeBuilder = codeBuilder;
+        writer.WriteLine(BuildMethod());
+        writer.WriteLine("{");
+        writer.Indent();
 
-        public override void Build(IndentedWriter writer)
+        _codeBuilder.Build(writer);
+
+        writer.Unindent();
+        writer.WriteLine("}");
+    }
+
+    private string BuildMethod()
+    {
+        var sb = new StringBuilder(_arguments.Accessibility.Value());
+
+        if (_arguments.ReturnType == null)
+            sb.Append(" void");
+        else
+            sb.Append(' ').Append(_arguments.ReturnType.ToString());
+
+        sb.Append(' ').Append(_arguments.Name);
+        sb.Append('(');
+
+        if (_arguments.Arguments != null)
         {
-            writer.WriteLine(BuildMethod());
-            writer.WriteLine("{");
-            writer.Indent();
+            var first = true;
 
-            _codeBuilder.Build(writer);
-
-            writer.Unindent();
-            writer.WriteLine("}");
-        }
-
-        private string BuildMethod()
-        {
-            var sb = new StringBuilder(_arguments.Accessibility.Value());
-
-            if (_arguments.ReturnType == null)
-                sb.Append(" void");
-            else
-                sb.Append(' ').Append(_arguments.ReturnType.ToString());
-
-            sb.Append(' ').Append(_arguments.Name);
-            sb.Append('(');
-
-            if (_arguments.Arguments != null)
+            foreach (var argument in _arguments.Arguments)
             {
-                var first = true;
+                if (first)
+                    first = false;
+                else
+                    sb.Append(", ");
 
-                foreach (var argument in _arguments.Arguments)
-                {
-                    if (first)
-                        first = false;
-                    else
-                        sb.Append(", ");
-
-                    sb.Append(argument.Type).Append(' ').Append(argument.Name);
-                }
+                sb.Append(argument.Type).Append(' ').Append(argument.Name);
             }
-
-            sb.Append(')');
-
-            return sb.ToString();
         }
+
+        sb.Append(')');
+
+        return sb.ToString();
     }
 }

@@ -51,7 +51,16 @@ public abstract class BootstrapBase(string basePath, string name)
         }
         catch (OperationCanceledException)
         {
-            try { if (!process.HasExited) process.Kill(true); } catch { }
+            try
+            {
+                if (!process.HasExited)
+                    process.Kill(true);
+            }
+            catch
+            {
+                // nothing to do here
+            }
+
             throw;
         }
     }

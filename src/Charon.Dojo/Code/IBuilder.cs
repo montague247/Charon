@@ -1,11 +1,10 @@
-namespace Charon.Dojo.Code
+namespace Charon.Dojo.Code;
+
+public interface IBuilder
 {
-    public interface IBuilder
-    {
-        string Build();
+    string Build();
 
-        void Build(IndentedWriter writer);
+    void Build(IndentedWriter writer);
 
-        void ToFile(string path, CancellationToken cancellationToken);
-    }
+    void ToFile(string path, CancellationToken cancellationToken);
 }

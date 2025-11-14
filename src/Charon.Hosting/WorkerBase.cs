@@ -47,6 +47,11 @@ public abstract class WorkerBase : BackgroundService
             await Task.Delay(1000, stoppingToken);
         }
 
+        await StopWorkerAsync(stoppingToken);
+    }
+
+    private async Task StopWorkerAsync(CancellationToken stoppingToken)
+    {
         Log.Information("Stopping worker...");
 
         await OnStop(stoppingToken);
@@ -54,17 +59,17 @@ public abstract class WorkerBase : BackgroundService
         Log.Information("Worker stopped at: {Time}", DateTimeOffset.Now);
     }
 
-    private void OnStarted()
+    private static void OnStarted()
     {
         Log.Information("Service started at: {Time}", DateTimeOffset.Now);
     }
 
-    private void OnStopping()
+    private  static void OnStopping()
     {
         Log.Information("Service stopping at: {Time}", DateTimeOffset.Now);
     }
 
-    private void OnStopped()
+    private  static void OnStopped()
     {
         Log.Information("Service stopped at: {Time}", DateTimeOffset.Now);
     }
