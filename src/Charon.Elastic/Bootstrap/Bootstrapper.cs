@@ -40,7 +40,7 @@ public static class Bootstrapper
         var starter = new ElasticsearchBootstrap(elasticsearchPath!)
         {
             GetKibanaPath = () => FindPath("kibana", version),
-            GetUsers = () => [.. ElasticsearchBootstrapConfig.Load(elasticsearchPath!).Users!.Values.Where(s => !s.PasswordChangedUtc.HasValue || string.IsNullOrEmpty(s.Password) || s.PasswordChangedUtc.Value.AddDays(30) < DateTime.UtcNow)],
+            GetUsers = () => [.. ElasticsearchBootstrapConfig.Load(elasticsearchPath!).Users!.Values.Where(s => s.PasswordChangeRequired(true))],
             SaveUsers = users => ElasticsearchBootstrapConfig.SetUsers(elasticsearchPath!, cancellationToken, users),
             KibanaEnrollmentRequired = () => !ElasticsearchBootstrapConfig.Load(elasticsearchPath!).KibanaEnrollmentUtc.HasValue,
             KibanaEnrollmentFinished = () => ElasticsearchBootstrapConfig.SetKibanaEnrollmentFinished(elasticsearchPath!, DateTime.UtcNow, cancellationToken)
