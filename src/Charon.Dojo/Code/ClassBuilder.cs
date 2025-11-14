@@ -13,33 +13,30 @@ namespace Charon.Dojo.Code
         public ClassBuilder Attribute<T>(Action<AttributeDescriptor>? descriptor = null)
             where T : Attribute
         {
-            var attributeDescriptor = new AttributeDescriptor(Arguments, out AttributeArguments arguments)
-                                    .Type<T>();
+            var attributeDescriptor = new AttributeDescriptor(Arguments, out AttributeArguments attributeArguments).Type<T>();
 
-            return Attribute(descriptor, attributeDescriptor, arguments);
+            return Attribute(descriptor, attributeDescriptor, attributeArguments);
         }
 
         public ClassBuilder Property<T>(string name, Action<PropertyDescriptor> descriptor)
         {
-            var propertyDescriptor = new PropertyDescriptor(name, Arguments, out PropertyArguments arguments)
-                                    .ReturnType<T>();
+            var propertyDescriptor = new PropertyDescriptor(name, Arguments, out PropertyArguments attributeArguments).ReturnType<T>();
 
-            return Property(descriptor, propertyDescriptor, arguments);
+            return Property(descriptor, propertyDescriptor, attributeArguments);
         }
 
         public ClassBuilder Method(string name, Action<MethodDescriptor> descriptor, Action<CodeBuilder> code)
         {
-            var methodDescriptor = new MethodDescriptor(name, Arguments, out MethodArguments arguments);
+            var methodDescriptor = new MethodDescriptor(name, Arguments, out MethodArguments attributeArguments);
 
-            return Method(descriptor, methodDescriptor, code, arguments);
+            return Method(descriptor, methodDescriptor, code, attributeArguments);
         }
 
         public ClassBuilder Method<T>(string name, Action<MethodDescriptor> descriptor, Action<CodeBuilder> code)
         {
-            var methodDescriptor = new MethodDescriptor(name, Arguments, out MethodArguments arguments)
-                                    .ReturnType<T>();
+            var methodDescriptor = new MethodDescriptor(name, Arguments, out MethodArguments attributeArguments).ReturnType<T>();
 
-            return Method(descriptor, methodDescriptor, code, arguments);
+            return Method(descriptor, methodDescriptor, code, attributeArguments);
         }
 
         public override void Build(IndentedWriter writer)

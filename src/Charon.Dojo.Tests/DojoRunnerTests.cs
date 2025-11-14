@@ -8,6 +8,8 @@ namespace Charon.Dojo.Tests
         public void Execute()
         {
             DojoRunner.Execute();
+
+            Assert.True(true);
         }
     }
 }

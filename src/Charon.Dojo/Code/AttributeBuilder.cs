@@ -20,32 +20,36 @@ namespace Charon.Dojo.Code
                 _arguments.Arguments.Count > 0)
             {
                 sb.Append('(');
-                var first = true;
-
-                foreach (var argument in _arguments.Arguments)
-                {
-                    if (first)
-                        first = false;
-                    else
-                        sb.Append(", ");
-
-                    if (argument.Name != null)
-                    {
-                        sb.Append(argument.Name);
-
-                        if (char.IsUpper(argument.Name[0]))
-                            sb.Append(" = ");
-                        else
-                            sb.Append(": ");
-                    }
-
-                    sb.Append(argument.Value);
-                }
-
+                AppendArguments(sb, _arguments.Arguments);
                 sb.Append(')');
             }
 
             return sb.Append(']').ToString();
+        }
+
+        private static void AppendArguments(StringBuilder sb, List<AttributeArgumentArguments> arguments)
+        {
+            var first = true;
+
+            foreach (var argument in arguments)
+            {
+                if (first)
+                    first = false;
+                else
+                    sb.Append(", ");
+
+                if (argument.Name != null)
+                {
+                    sb.Append(argument.Name);
+
+                    if (char.IsUpper(argument.Name[0]))
+                        sb.Append(" = ");
+                    else
+                        sb.Append(": ");
+                }
+
+                sb.Append(argument.Value);
+            }
         }
     }
 }
