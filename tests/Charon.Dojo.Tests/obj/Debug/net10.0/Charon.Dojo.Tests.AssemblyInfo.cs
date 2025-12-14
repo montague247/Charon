@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Charon.Dojo.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08c259a678c3e5a399683a0d94617566e4757c22")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6e465aaadb4827ab2876d2bf860d9804bc46668a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Charon.Dojo.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Charon.Dojo.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
