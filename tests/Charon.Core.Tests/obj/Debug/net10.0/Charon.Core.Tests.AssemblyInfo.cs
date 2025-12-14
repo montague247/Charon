@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Charon.Core.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a38408521b92f7dfcf391b75532ffa26c2da1a6c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08c259a678c3e5a399683a0d94617566e4757c22")]
 [assembly: System.Reflection.AssemblyProductAttribute("Charon.Core.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Charon.Core.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
