@@ -22,13 +22,14 @@ public sealed class DumpGenerator : IIncrementalGenerator
     private static void Execute(SourceProductionContext context, (Compilation Left, ImmutableArray<SyntaxNode> Right) tuple)
     {
         var (compilation, list) = tuple;
-        var items = new List<string>();
-
-        items.Add("\"Options:\"");
-        items.Add($"\"  Language: {compilation.Options.Language}\"");
-        items.Add($"\"  Optimization level: {compilation.Options.OptimizationLevel}\"");
-        items.Add($"\"  Platform: {compilation.Options.Platform}\"");
-        items.Add($"\"  Output kind: {compilation.Options.OutputKind}\"");
+        var items = new List<string>
+        {
+            "\"Options:\"",
+            $"\"  Language: {compilation.Options.Language}\"",
+            $"\"  Optimization level: {compilation.Options.OptimizationLevel}\"",
+            $"\"  Platform: {compilation.Options.Platform}\"",
+            $"\"  Output kind: {compilation.Options.OutputKind}\""
+        };
 
         var syntaxTrees = compilation.SyntaxTrees;
 
