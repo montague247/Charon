@@ -5,11 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Core", "Charon.Core\Charon.Core.csproj", "{0D1018E1-57C4-479B-ABE6-57EFCA2DCEFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Core.Tests", "Charon.Core.Tests\Charon.Core.Tests.csproj", "{0F1703EF-0697-460D-9570-34F883D5DBFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Core.Tests", "../tests/Charon.Core.Tests\Charon.Core.Tests.csproj", "{0F1703EF-0697-460D-9570-34F883D5DBFC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Dojo", "Charon.Dojo\Charon.Dojo.csproj", "{E45AFCD4-7D4C-4CF7-8D5A-2E5282F7EB00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Dojo.Tests", "Charon.Dojo.Tests\Charon.Dojo.Tests.csproj", "{CC543712-B8DB-4FD5-BD33-DEA84A42F220}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Dojo.Tests", "../tests/Charon.Dojo.Tests\Charon.Dojo.Tests.csproj", "{CC543712-B8DB-4FD5-BD33-DEA84A42F220}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Cli", "Charon.Cli\Charon.Cli.csproj", "{1684CE7E-AE9D-4A01-91F6-4546B2C793EF}"
 EndProject
@@ -17,13 +17,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Elastic", "Charon.El
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Hosting", "Charon.Hosting\Charon.Hosting.csproj", "{9BE22FE0-DCB9-4343-A83F-68FD14FA253D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Hosting.Tests", "Charon.Hosting.Tests\Charon.Hosting.Tests.csproj", "{541F51F4-CB42-42F8-B9FF-9DA4650AA225}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Hosting.Tests", "../tests/Charon.Hosting.Tests\Charon.Hosting.Tests.csproj", "{541F51F4-CB42-42F8-B9FF-9DA4650AA225}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Api", "Charon.Api\Charon.Api.csproj", "{E17E54DF-BF27-4F91-999B-688FE87F09C8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Elastic.Cli", "Charon.Elastic.Cli\Charon.Elastic.Cli.csproj", "{675D73FC-DA59-4BC4-8AC3-4C663DD3F0B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Analyzer", "Charon.Analyzer\Charon.Analyzer.csproj", "{A67E38D5-E013-49A0-98F5-72E460AE21E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Charon.Generator", "Charon.Generator\Charon.Generator.csproj", "{A67E38D5-E013-49A0-98F5-72E460AE21E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
