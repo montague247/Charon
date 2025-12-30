@@ -19,7 +19,7 @@ set -o pipefail
 
 echo "Update tool..."
 
-npm install -g npm https-proxy-agent npm-check-updates --force
+npm install --ignore-scripts -g npm https-proxy-agent npm-check-updates --force
 npm version
 
 echo "Update package.json..."
