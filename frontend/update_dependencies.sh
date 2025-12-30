@@ -28,6 +28,6 @@ ncu --upgrade
 
 echo "Upgrade outdated packages..."
 
-npm install
+npm install --ignore-scripts
 
 echo "Finished"
