@@ -9,7 +9,5 @@ await Console.Out.WriteLineAsync(@"
  \____/_| |_|\__,_|_|  \___/|_| |_|  \____/\_____/\___/ 
 ");
 
-//Charon.Dumps.Dump;
-
 if (args.Length == 0)
     DojoRunner.Execute();
