@@ -22,13 +22,10 @@ public sealed class ElasticsearchUser
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string[]? Roles { get; set; }
 
-    public bool PasswordChangeRequired(bool system)
+    public bool PasswordChangeRequired()
     {
-        return System == system &&
-            (
-                !PasswordChangedUtc.HasValue ||
-                string.IsNullOrEmpty(Password) ||
-                PasswordChangedUtc.Value.AddDays(30) < DateTime.UtcNow
-            );
+        return !PasswordChangedUtc.HasValue ||
+            string.IsNullOrEmpty(Password) ||
+            PasswordChangedUtc.Value.AddDays(30) < DateTime.UtcNow;
     }
 }

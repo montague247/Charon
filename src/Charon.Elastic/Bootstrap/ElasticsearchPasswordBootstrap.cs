@@ -1,5 +1,4 @@
 using Charon.Elastic.Configuration;
-using Elastic.Clients.Elasticsearch.AsyncSearch;
 using Serilog;
 
 namespace Charon.Elastic.Bootstrap;
@@ -18,7 +17,7 @@ public sealed class ElasticsearchPasswordBootstrap(string basePath)
         Log.Information("Reset password for '{Name}'", _user.Username);
 
         LogOutput = false;
-        
+
         Execute(cancellationToken, "-a", "-b", "-s", "-u", user.Username!).GetAwaiter().GetResult();
     }
 

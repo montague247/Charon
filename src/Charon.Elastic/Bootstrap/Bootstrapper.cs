@@ -18,6 +18,7 @@ public static class Bootstrapper
         {
             switch (args[i])
             {
+                case "es":
                 case "elastic":
                 case "elasticsearch":
                     var version = GetArgument("version", args, ref i);
@@ -40,7 +41,7 @@ public static class Bootstrapper
         var starter = new ElasticsearchBootstrap(elasticsearchPath!)
         {
             GetKibanaPath = () => FindPath("kibana", version),
-            GetUsers = () => [.. ElasticsearchBootstrapConfig.Load(elasticsearchPath!).Users!.Values.Where(s => s.PasswordChangeRequired(true))],
+            GetUsers = () => [.. ElasticsearchBootstrapConfig.Load(elasticsearchPath!).Users!.Values.Where(s => s.PasswordChangeRequired())],
             SaveUsers = users => ElasticsearchBootstrapConfig.SetUsers(elasticsearchPath!, cancellationToken, users),
             KibanaEnrollmentRequired = () => !ElasticsearchBootstrapConfig.Load(elasticsearchPath!).KibanaEnrollmentUtc.HasValue,
             KibanaEnrollmentFinished = () => ElasticsearchBootstrapConfig.SetKibanaEnrollmentFinished(elasticsearchPath!, DateTime.UtcNow, cancellationToken)

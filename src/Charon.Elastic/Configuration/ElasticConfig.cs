@@ -5,7 +5,7 @@ namespace Charon.Elastic.Configuration;
 
 public sealed class ElasticConfig : ConnectionsSettings
 {
-    public const string DefaultUrl = "http://localhost:9200"; // NOSONAR
+    public const string DefaultUrl = "https://localhost:9200"; // NOSONAR
 
     public string Url { get; set; } = DefaultUrl;
 

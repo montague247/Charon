@@ -72,12 +72,16 @@ public sealed class ElasticsearchBootstrap(string basePath)
         Log.Information("Generate passwords of {Count} users", users.Length);
 
         var bootstrap = new ElasticsearchPasswordBootstrap(_basePath);
+        var elasticUser = new ElasticsearchUserPassword(users);
 
         Task.Run(() =>
         {
             foreach (var user in users)
             {
-                bootstrap.Execute(user, cancellationToken);
+                if (user.System)
+                    bootstrap.Execute(user, cancellationToken);
+                else
+                    elasticUser.SetRandomPassword(user, cancellationToken);
             }
 
             SaveUsers!(users);
