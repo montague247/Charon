@@ -25,7 +25,7 @@ public sealed class SecurityLevel5 : SecurityLevel
 
         var salt = CreateSalt();
         var salted = new List<byte>(salt);
-        var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName).GetBytes(DerivedBytesLength);
+        var derivedBytes = Rfc2898DeriveBytes.Pbkdf2(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName, DerivedBytesLength);
 
         salted.AddRange(Encoding.UTF8.GetBytes(value).Veil(derivedBytes));
 

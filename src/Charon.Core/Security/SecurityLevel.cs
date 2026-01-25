@@ -110,7 +110,7 @@ public abstract class SecurityLevel(int level, int maxLength = 127, int saltLeng
         var decrypted = crypto.Decrypt(encrypted, EncryptionPadding);
         decrypted = RemoveSalt(decrypted, out byte[] salt);
 
-        var derivedBytes = new Rfc2898DeriveBytes(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName).GetBytes(DerivedBytesLength);
+        var derivedBytes = Rfc2898DeriveBytes.Pbkdf2(salt.SecureHash().Veil(salt), salt, DeriveBytesIterations, DeriveBytesHashAlgorithmName, DerivedBytesLength);
 
         return Encoding.UTF8.GetString(decrypted.Unveil(derivedBytes));
     }
