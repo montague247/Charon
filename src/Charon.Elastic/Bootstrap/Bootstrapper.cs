@@ -5,6 +5,8 @@ namespace Charon.Elastic.Bootstrap;
 
 public static class Bootstrapper
 {
+    private static string? _path;
+
     public static async Task Execute(string[] args, CancellationToken cancellationToken)
     {
         Log.Logger = new LoggerConfiguration()
@@ -18,6 +20,12 @@ public static class Bootstrapper
         {
             switch (args[i])
             {
+                case "--path":
+                    if (i + 1 == args.Length)
+                        break;
+
+                    _path = Path.GetFullPath(args[++i]);
+                    break;
                 case "es":
                 case "elastic":
                 case "elasticsearch":
@@ -33,7 +41,8 @@ public static class Bootstrapper
     {
         var elasticsearchPath = FindPath("elasticsearch", version);
 
-        if (Exit(elasticsearchPath == null || !Directory.Exists(elasticsearchPath), () => Log.Error("No path found: {Path}", elasticsearchPath), 1))
+        if (Exit(elasticsearchPath == null ||
+            !Directory.Exists(elasticsearchPath), () => Log.Error("No path found: {Path}", elasticsearchPath), 1))
             return;
 
         Log.Information("Start elasticsearch in path '{Path}'", elasticsearchPath);
@@ -64,7 +73,7 @@ public static class Bootstrapper
 
     private static string? FindPath(string name, string? version)
     {
-        var path = Environment.CurrentDirectory;
+        var path = _path ?? Environment.CurrentDirectory;
 
         Log.Information("Find directory '{Name}' with version '{Version}' in path '{Path}'", name, version, path);
 

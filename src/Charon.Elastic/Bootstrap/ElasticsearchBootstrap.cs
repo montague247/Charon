@@ -32,6 +32,8 @@ public sealed class ElasticsearchBootstrap(string basePath)
             KibanaEnrollmentFinished != null &&
             KibanaEnrollmentRequired();
 
+        // TODO: Ensure: xattr -d com.apple.quarantine /Pfad/zu/jdk.app
+
         await base.Execute(cancellationToken, args);
     }
 

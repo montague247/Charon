@@ -47,9 +47,7 @@ public sealed class ElasticsearchBootstrapConfig
             existingUser.Password = user.Password;
             existingUser.PasswordChangedUtc = user.PasswordChangedUtc;
 
-            var bellerophonPath = Path.GetFullPath(Path.Combine(path, "..", "..", "Projects", "bellerophon"));
-
-            if (Directory.Exists(bellerophonPath))
+            if (GetBellerophonPath(path, out string bellerophonPath))
             {
                 SetPassword(Path.Combine(bellerophonPath, "elastic-config-tests.json"), user, cancellationToken);
                 SetPassword(Path.Combine(bellerophonPath, "Bellerophon-elastic-config-DEV-VW-INTRA.json"), user, cancellationToken);
@@ -102,5 +100,21 @@ public sealed class ElasticsearchBootstrapConfig
         config.ToJson(tempPath);
 
         FileComparer.Move(tempPath, path, cancellationToken);
+    }
+
+    private static bool GetBellerophonPath(string path, out string bellerophonPath)
+    {
+        bellerophonPath = Path.GetFullPath(".");
+
+        if (File.Exists(Path.Combine(bellerophonPath, "Bellerophon.sln")))
+            return true;
+
+        bellerophonPath = Path.GetFullPath(Path.Combine(path, "..", "..", "Projects", "bellerophon"));
+
+        if (Directory.Exists(bellerophonPath) &&
+            File.Exists(Path.Combine(bellerophonPath, "Bellerophon.sln")))
+            return true;
+
+        return false;
     }
 }
