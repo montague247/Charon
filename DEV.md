@@ -20,6 +20,9 @@ Charon/
 ├── docker-compose.yml
 └── README.md
 ```
+# Update
+
+run `./update_dev.sh`
 
 # Frontend Setup
 Inside the `frontend` folder:
@@ -60,3 +63,37 @@ Secrets to set in the repo:
 - `AZURE_PUBLISH_PROFILE` (check Azure Portal)
 - or `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` (if AWS ECS is used)
 - optional `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN`, if Docker Hub instead of GHCR is used
+
+# Ollama
+
+## Start model
+```bash
+ollama run mistral
+```
+## Show models
+
+```bash
+ollama list
+```
+
+## Start local API server
+```bash
+ollama serve
+```
+→ `http://localhost:11434`
+
+# Using Continue as AI agent
+
+- Install `Continue` as an extension
+- Edit `~/.continue/config.json`:
+```json
+{
+  "models": [
+    {
+      "title": "Local Llama",
+      "provider": "ollama",
+      "model": "llama3.2:3b"
+    }
+  ]
+}
+```
