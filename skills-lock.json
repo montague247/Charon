@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "check": {
+      "source": "continuedev/skills",
+      "sourceType": "github",
+      "computedHash": "ff026d52f964332562e2a10053f9935f619bf4d3ae04d50d3cc1c478d34ba007"
+    },
+    "writing-checks": {
+      "source": "continuedev/skills",
+      "sourceType": "github",
+      "computedHash": "551cc4469505990a9f0bd1f27fa920a214699f873de180a4911a944a2a053d14"
+    }
+  }
+}
