@@ -17,7 +17,17 @@ set -u
 # This is causing it to fail
 set -o pipefail
 
-brew update && brew upgrade && brew install ollama
+echo "Updating Charon and dependencies..."
 
-frontend/update_dependenies.sh
-src/update_dependenies.sh
+brew update && brew upgrade
+
+if command -v ollama >/dev/null 2>&1; then
+    echo "Ollama is available"
+else
+    brew install ollama
+fi
+
+[ -d frontend ] && frontend/update_dependenies.sh
+[ -d src ] && src/update_dependenies.sh
+
+echo "Finished updating Charon and dependencies."
