@@ -25,22 +25,28 @@ scriptdir=$(dirname "$0")
 listsdir="$scriptdir/lists"
 mkdir -p "$listsdir"
 
-echo "Update all python packages..."
-$PIP list --local -o --format=freeze | cut -d = -f 1 | xargs $PIP install -U
-$PIP list --local --format=freeze > "$listsdir/pip_list.txt"
+#echo "Update all python packages..."
 
-echo "Update pipx apps..."
-pipx upgrade-all
-pipx list > "$listsdir/pipx_list.txt"
+#for line in $(pip3 list --local --format=freeze); do
+#package=${line%%=*}
+#$PIP install -U $package
+#done
+
+#echo "Update pipx apps..."
+
+#pipx upgrade-all
+#pipx list > "$listsdir/pipx_list.txt"
 
 echo "Update homebrew..."
+
 brew update
 brew upgrade
 brew list > "$listsdir/brew_list.txt"
 
 echo "Update all brew casks..."
-brew cask outdated | cut -d " " -f 1 | xargs -n 1 brew cask reinstall
-brew cask list > "$listsdir/brew_cask_list.txt"
+
+brew list --cask | xargs brew upgrade --cask --greedy
+brew list --cask > "$listsdir/brew_cask_list.txt"
 
 if command -v ollama >/dev/null 2>&1; then
     echo "Ollama is available"
@@ -48,8 +54,17 @@ else
     brew install ollama
 fi
 
-[ -d frontend ] && frontend/update_dependenies.sh
-[ -d src ] && src/update_dependenies.sh
+if [ -d frontend ]; then
+    cd frontend
+    ./update_dependencies.sh
+    cd ..
+fi
+
+if [ -d src ]; then
+    cd src
+    ./update_dependencies.sh
+    cd ..
+fi
 
 echo "Cleanup..."
 
