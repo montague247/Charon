@@ -33,3 +33,4 @@ wget
 xz
 zstd
 temurin@21
+temurin@25
