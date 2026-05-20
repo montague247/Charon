@@ -37,10 +37,16 @@ mkdir -p "$listsdir"
 #pipx upgrade-all
 #pipx list > "$listsdir/pipx_list.txt"
 
-echo "Update homebrew..."
+if ! command -v brew &> /dev/null; then
+    echo 'Installing Homebrew...'
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+echo "Update Homebrew..."
 
 brew update
-brew upgrade
+brew upgrade --greedy
+brew cleanup
 brew list > "$listsdir/brew_list.txt"
 
 echo "Update all brew casks..."
