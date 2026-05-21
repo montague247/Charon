@@ -9,7 +9,7 @@ namespace Charon
         public static string? Value<T>(this T source)
            where T : Enum
         {
-            var name = source.ToString();
+            var name = source.GetName();
             var attr = source.GetType().GetField(name)!.GetCustomAttribute<EnumMemberAttribute>(true);
 
             if (attr != null)
@@ -21,7 +21,7 @@ namespace Charon
         public static string? Description<T>(this T source)
             where T : Enum
         {
-            var name = source.ToString();
+            var name = source.GetName();
             var attr = source.GetType().GetField(name)!.GetCustomAttribute<DescriptionAttribute>(true);
 
             if (attr != null)
