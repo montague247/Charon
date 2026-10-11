@@ -1,14 +1,14 @@
+abseil
 ada-url
 brotli
 c-ares
 ca-certificates
 fmt
 hdrhistogram_c
+highway
 icu4c@78
 libffi
 libnghttp2
-libnghttp3
-libngtcp2
 libuv
 llhttp
 lz4
@@ -20,6 +20,7 @@ nbytes
 node
 ollama
 openssl@3
+openssl@4
 python@3.14
 readline
 simdjson
