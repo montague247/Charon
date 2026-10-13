@@ -45,7 +45,7 @@ fi
 echo "Update Homebrew..."
 
 brew update
-brew upgrade --greedy
+brew upgrade -y --greedy
 brew cleanup
 brew list > "$listsdir/brew_list.txt"
 
