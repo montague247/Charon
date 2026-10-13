@@ -1,5 +1,5 @@
 using System.Reflection;
-using NetSentinel.Argument;
+using Charon.Console;
 
 namespace Charon.Core.Tests.Types;
 

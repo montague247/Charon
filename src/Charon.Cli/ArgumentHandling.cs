@@ -1,6 +1,8 @@
+using Charon.Console;
+
 namespace Charon.Cli;
 
-[Charon.Console.ArgumentHandling]
+[ArgumentHandling]
 public static partial class ArgumentHandling
 {
 }
