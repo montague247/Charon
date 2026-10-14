@@ -26,6 +26,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../Charon.Generator/Charon.Generator.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Using Include="Microsoft.CodeAnalysis" />
     <Using Include="Microsoft.CodeAnalysis.CSharp.Syntax" />
   </ItemGroup>
