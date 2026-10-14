@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Charon.Dojo\Charon.Dojo.csproj" />
     <ProjectReference Include="..\Charon.Core\Charon.Core.csproj" />
+    <ProjectReference Include="..\Charon.Generator\Charon.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" SetTargetFramework="TargetFramework=netstandard2.0" />
     <ProjectReference Include="..\Charon.Console.Generator\Charon.Console.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" SetTargetFramework="TargetFramework=netstandard2.0" />
   </ItemGroup>
   <PropertyGroup>

@@ -1,5 +1,7 @@
 #nullable enable
 
+using System;
+
 namespace Charon.Console;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
