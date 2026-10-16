@@ -42,7 +42,7 @@ public sealed class ArgumentHandlingAttributeTests
     {
         var usage = typeof(ArgumentHandlingAttribute).GetCustomAttribute<AttributeUsageAttribute>();
         Assert.NotNull(usage);
-        Assert.Equal(AttributeTargets.Class | AttributeTargets.Assembly, usage.ValidOn);
+        Assert.Equal(AttributeTargets.Class, usage.ValidOn);
         Assert.False(usage.AllowMultiple);
         Assert.False(usage.Inherited);
     }

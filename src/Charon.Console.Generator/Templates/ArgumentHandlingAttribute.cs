@@ -4,7 +4,7 @@ using System;
 
 namespace Charon.Console;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 public sealed class ArgumentHandlingAttribute : Attribute
 {
     public ArgumentHandlingAttribute()
