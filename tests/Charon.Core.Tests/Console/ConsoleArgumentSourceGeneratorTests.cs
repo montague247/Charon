@@ -19,6 +19,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
         var attrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentHandlingAttribute.g.cs");
+        Assert.DoesNotContain(outputFiles, f => f.HintName == "ArgumentHandlerAttribute.g.cs");
         Assert.Contains("public sealed class ArgumentHandlingAttribute : Attribute", attrFile.SourceText);
         Assert.Contains("public string? Description { get; }", attrFile.SourceText);
         Assert.Contains("public bool CaseSensitive { get; set; }", attrFile.SourceText);
@@ -44,6 +45,8 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
         Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
         Assert.Contains(outputFiles, f => f.HintName == "ArgumentHandlingAttribute.g.cs");
+        var handlerAttrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentHandlerAttribute.g.cs");
+        Assert.Contains("public sealed class ArgumentHandlerAttribute(string? name, string description) : Attribute", handlerAttrFile.SourceText);
         Assert.Contains(outputFiles, f => f.HintName == "TestApp.ArgumentHandling.Sample.g.cs");
 
         var sampleFile = outputFiles.First(f => f.HintName == "TestApp.ArgumentHandling.Sample.g.cs");

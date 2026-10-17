@@ -22,7 +22,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(candidateClasses.Collect(), static (spc, classes) =>
         {
             var seen = new HashSet<string>();
-            
+
             foreach (var classModel in classes)
             {
                 if (classModel is null)
@@ -36,6 +36,11 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
                     continue;
 
                 GenerateSource(spc, classModel);
+            }
+
+            if (seen.Count != 0)
+            {
+                spc.AddSource($"{nameof(Templates.ArgumentHandlerAttribute)}.g.cs", Templates.ArgumentHandlerAttribute);
             }
         });
     }

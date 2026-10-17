@@ -8,6 +8,8 @@ internal static class Templates
 
     public static string ArgumentHandlingAttribute { get; } = Read("Templates.ArgumentHandlingAttribute.cs");
 
+    public static string ArgumentHandlerAttribute { get; } = Read("Templates.ArgumentHandlerAttribute.cs");
+
     private static string Read(string name)
     {
         using var stream = Assembly.GetManifestResourceStream(name)?? throw new InvalidOperationException($"Embedded resource '{name}' not found.");
