@@ -41,6 +41,8 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
             if (seen.Count != 0)
             {
                 spc.AddSource($"{nameof(Templates.ArgumentHandlerAttribute)}.g.cs", Templates.ArgumentHandlerAttribute);
+                spc.AddSource($"{nameof(Templates.IArgumentHandler)}.g.cs", Templates.IArgumentHandler);
+                spc.AddSource($"{nameof(Templates.IGlobalOptions)}.g.cs", Templates.IGlobalOptions);
             }
         });
     }
