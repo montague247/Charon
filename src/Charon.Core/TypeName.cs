@@ -9,7 +9,7 @@ namespace Charon
         {
             { typeof(string), "string" },
             { typeof(int), "int" },
-            { typeof(int), "uint" },
+            { typeof(uint), "uint" },
             { typeof(long), "long" },
             { typeof(ulong), "ulong" },
             { typeof(decimal), "decimal" },
@@ -17,7 +17,7 @@ namespace Charon
             { typeof(byte), "byte" },
             { typeof(sbyte), "sbyte" },
             { typeof(short), "short" },
-            { typeof(short), "ushort" },
+            { typeof(ushort), "ushort" },
             { typeof(float), "float" },
             { typeof(double), "double" },
             { typeof(char), "char" }
@@ -97,7 +97,26 @@ namespace Charon
             if (_cachedNames.TryGetValue(type, out var typeName))
                 return typeName;
 
-            typeName = GetSimpleOrArrayTypeName(type) ?? GetGenericTypeName(type) ?? type.Name;
+            typeName = GetSimpleOrArrayTypeName(type);
+
+            if (typeName != null)
+            {
+                _cachedNames.TryAdd(type, typeName);
+
+                return typeName;
+            }
+
+            typeName = GetGenericTypeName(type);
+
+            if (type.IsGenericType &&
+                type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                _cachedNames.TryAdd(type, typeName!);
+
+                return typeName;
+            }
+
+            typeName ??= type.Name;
 
             var typeNamespace = type.Namespace!;
             typeName = ResolveNamespaceConflict(type, typeName, typeNamespace);
@@ -159,6 +178,8 @@ namespace Charon
 
                 if (matchingTypes.Length > 1)
                     return string.Concat(type.Namespace, '.', typeName);
+
+                return typeName;
             }
 
             return string.Concat(typeNamespace, '.', typeName);

@@ -12,7 +12,7 @@ namespace Charon.Core.Tests.Dojo
             Assert.Equal("SE-Name", actual.Name);
             Assert.Null(actual.Path);
             Assert.Null(actual.Namespace);
-            Assert.EndsWith(Path.Combine("src", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
+            Assert.EndsWith(Path.Combine("tests", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
             Assert.Equal(["DEV"], actual.Stages);
             Assert.Null(actual.ConfigurationPath);
             Assert.Equal(4096, actual.KeySize);
@@ -23,7 +23,7 @@ namespace Charon.Core.Tests.Dojo
             Assert.Equal("SE-Name", actual.Name);
             Assert.Null(actual.Path);
             Assert.Equal("Charon.Core.Tests", actual.Namespace);
-            Assert.EndsWith(Path.Combine("src", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
+            Assert.EndsWith(Path.Combine("tests", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
             Assert.Equal(["DEV"], actual.Stages);
             Assert.Null(actual.ConfigurationPath);
             Assert.Equal(4096, actual.KeySize);
@@ -45,7 +45,7 @@ namespace Charon.Core.Tests.Dojo
             Assert.Equal("SE-Name-full", actual.Name);
             Assert.Equal("Subname", actual.Path);
             Assert.Equal("myNamespace", actual.Namespace);
-            Assert.EndsWith(Path.Combine("src", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
+            Assert.EndsWith(Path.Combine("tests", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
             Assert.Equal(["DEV", "QA", "PROD"], actual.Stages);
             Assert.Equal("mySecureEncrypt.json", actual.ConfigurationPath);
             Assert.Equal(2048, actual.KeySize);
@@ -67,7 +67,7 @@ namespace Charon.Core.Tests.Dojo
             Assert.Equal("SE-Name-full", actual.Name);
             Assert.Equal($"Foo{Path.DirectorySeparatorChar}Bar", actual.Path);
             Assert.Equal("Charon.Core.Tests.Foo.Bar", actual.Namespace);
-            Assert.EndsWith(Path.Combine("src", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
+            Assert.EndsWith(Path.Combine("tests", "Charon.Core.Tests", "Dojo"), actual.SourcePath);
             Assert.Equal(["DEV", "QA", "PROD"], actual.Stages);
             Assert.Equal("mySecureEncrypt.json", actual.ConfigurationPath);
             Assert.Equal(2048, actual.KeySize);

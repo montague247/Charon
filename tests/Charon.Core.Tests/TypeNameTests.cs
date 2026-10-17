@@ -119,7 +119,7 @@ namespace Charon.Core.Tests
         public void TypeGetNameNullable()
         {
             var actual = new TypeName().GetName(typeof(char?));
-            Assert.Equal("System.Char?", actual);
+            Assert.Equal("char?", actual);
         }
 
         [Fact]

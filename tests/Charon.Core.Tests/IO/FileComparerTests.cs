@@ -196,6 +196,7 @@ namespace Charon.Core.Tests.IO
             var path = "ChangedVersion.txt";
 
             File.Delete(path);
+            File.Delete(string.Concat(path, '.', FileComparer.CryptoName));
 
             var version = "4711";
             var fc = new FileComparer(path, version);
