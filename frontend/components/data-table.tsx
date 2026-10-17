@@ -2,12 +2,17 @@
 
 import {
     ColumnDef,
-    SortingState,
+    columnVisibilityFeature,
+    createPaginatedRowModel,
+    createSortedRowModel,
     flexRender,
-    getCoreRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable
+    RowData,
+    rowPaginationFeature,
+    rowSelectionFeature,
+    rowSortingFeature,
+    SortingState,
+    tableFeatures,
+    useTable
 } from "@tanstack/react-table"
 
 import {
@@ -21,24 +26,33 @@ import {
 import { Button } from "./ui/button"
 import React from "react"
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
+export const dataTableFeatures = tableFeatures({
+    rowSortingFeature,
+    rowPaginationFeature,
+    columnVisibilityFeature,
+    rowSelectionFeature,
+    sortedRowModel: createSortedRowModel(),
+    paginatedRowModel: createPaginatedRowModel(),
+})
+
+export type DataTableFeatures = typeof dataTableFeatures
+
+interface DataTableProps<TData extends RowData> {
+    columns: ColumnDef<DataTableFeatures, TData, any>[]
     data: TData[]
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends RowData>({
     columns,
     data,
-}: Readonly<DataTableProps<TData, TValue>>) {
+}: Readonly<DataTableProps<TData>>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
 
-    const table = useReactTable({
+    const table = useTable({
+        features: dataTableFeatures,
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
         state: {
             sorting,
         }

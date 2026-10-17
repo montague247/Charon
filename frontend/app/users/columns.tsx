@@ -1,7 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ColumnDef } from "@tanstack/react-table"
+import { DataTableFeatures } from "@/components/data-table"
+import { createColumnHelper } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 
 // This type is used to define the shape of our data.
@@ -9,17 +10,17 @@ import { ArrowUpDown } from "lucide-react"
 export type User = {
     id: string
     name: string
-    email: string,
+    email: string
     createdAt: string
 }
 
-export const columns: ColumnDef<User>[] = [
-    {
-        accessorKey: "id",
+const columnHelper = createColumnHelper<DataTableFeatures, User>()
+
+export const columns = columnHelper.columns([
+    columnHelper.accessor("id", {
         header: "ID"
-    },
-    {
-        accessorKey: "name",
+    }),
+    columnHelper.accessor("name", {
         header: ({ column }) => {
             return (
                 <Button
@@ -31,9 +32,8 @@ export const columns: ColumnDef<User>[] = [
                 </Button>
             )
         }
-    },
-    {
-        accessorKey: "email",
+    }),
+    columnHelper.accessor("email", {
         header: ({ column }) => {
             return (
                 <Button
@@ -45,9 +45,8 @@ export const columns: ColumnDef<User>[] = [
                 </Button>
             )
         }
-    },
-    {
-        accessorKey: "createdAt",
+    }),
+    columnHelper.accessor("createdAt", {
         header: "Created At"
-    }
-]
+    })
+])
