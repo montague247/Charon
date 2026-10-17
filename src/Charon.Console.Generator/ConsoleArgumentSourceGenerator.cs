@@ -22,6 +22,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(candidateClasses.Collect(), static (spc, classes) =>
         {
             var seen = new HashSet<string>();
+            
             foreach (var classModel in classes)
             {
                 if (classModel is null)
