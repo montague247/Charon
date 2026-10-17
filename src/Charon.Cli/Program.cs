@@ -10,7 +10,7 @@ await Console.Out.WriteLineAsync(@"
  \____/_| |_|\__,_|_|  \___/|_| |_|  \____/\_____/\___/ 
 ");
 
-ArgumentHandling.Sample();
+ArgumentProcessor.Sample();
 
 if (args.Length == 0)
     DojoRunner.Execute();

@@ -8,7 +8,7 @@ namespace Charon.Core.Tests.Console;
 public sealed class ConsoleArgumentSourceGeneratorTests
 {
     [Fact]
-    public void Generator_GeneratesPostInitializationOutput_ArgumentHandlingAttribute()
+    public void Generator_GeneratesPostInitializationOutput_ArgumentProcessorAttribute()
     {
         const string userSource = """
             namespace TestApp;
@@ -18,9 +18,9 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         var (diagnostics, outputFiles, _) = RunGenerator(userSource);
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        var attrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentHandlingAttribute.g.cs");
+        var attrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentProcessorAttribute.g.cs");
         Assert.DoesNotContain(outputFiles, f => f.HintName == "ArgumentHandlerAttribute.g.cs");
-        Assert.Contains("public sealed class ArgumentHandlingAttribute : Attribute", attrFile.SourceText);
+        Assert.Contains("public sealed class ArgumentProcessorAttribute : Attribute", attrFile.SourceText);
         Assert.Contains("public string? Description { get; }", attrFile.SourceText);
         Assert.Contains("public bool CaseSensitive { get; set; }", attrFile.SourceText);
         Assert.Contains("public bool AllowUnknownArguments { get; set; }", attrFile.SourceText);
@@ -34,8 +34,8 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandlingAttribute]
-            public static partial class ArgumentHandling
+            [ArgumentProcessorAttribute]
+            public static partial class ArgumentProcessor
             {
             }
             """;
@@ -44,14 +44,14 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
         Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Contains(outputFiles, f => f.HintName == "ArgumentHandlingAttribute.g.cs");
+        Assert.Contains(outputFiles, f => f.HintName == "ArgumentProcessorAttribute.g.cs");
         var handlerAttrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentHandlerAttribute.g.cs");
         Assert.Contains("public sealed class ArgumentHandlerAttribute(string? name, string description) : Attribute", handlerAttrFile.SourceText);
-        Assert.Contains(outputFiles, f => f.HintName == "TestApp.ArgumentHandling.Sample.g.cs");
+        Assert.Contains(outputFiles, f => f.HintName == "TestApp.ArgumentProcessor.Sample.g.cs");
 
-        var sampleFile = outputFiles.First(f => f.HintName == "TestApp.ArgumentHandling.Sample.g.cs");
+        var sampleFile = outputFiles.First(f => f.HintName == "TestApp.ArgumentProcessor.Sample.g.cs");
         Assert.Contains("namespace TestApp;", sampleFile.SourceText);
-        Assert.Contains("public static partial class ArgumentHandling", sampleFile.SourceText);
+        Assert.Contains("public static partial class ArgumentProcessor", sampleFile.SourceText);
         Assert.Contains("public static void Sample()", sampleFile.SourceText);
         Assert.Contains("global::System.Console.WriteLine(\"Sample\");", sampleFile.SourceText);
     }
@@ -64,7 +64,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class CliArguments
             {
             }
@@ -87,7 +87,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         const string userSource = """
             namespace TestApp;
 
-            [Charon.Console.ArgumentHandlingAttribute("CLI Parser", CaseSensitive = true)]
+            [Charon.Console.ArgumentProcessorAttribute("CLI Parser", CaseSensitive = true)]
             public static partial class FullyQualifiedArgs
             {
             }
@@ -112,7 +112,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             internal static partial class InternalHandler
             {
             }
@@ -135,8 +135,8 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         const string userSource = """
             using Charon.Console;
 
-            [ArgumentHandling]
-            public static partial class GlobalArgumentHandling
+            [ArgumentProcessor]
+            public static partial class GlobalArgumentProcessor
             {
             }
             """;
@@ -145,11 +145,11 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
         Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Contains(outputFiles, f => f.HintName == "GlobalArgumentHandling.Sample.g.cs");
+        Assert.Contains(outputFiles, f => f.HintName == "GlobalArgumentProcessor.Sample.g.cs");
 
-        var sampleFile = outputFiles.First(f => f.HintName == "GlobalArgumentHandling.Sample.g.cs");
+        var sampleFile = outputFiles.First(f => f.HintName == "GlobalArgumentProcessor.Sample.g.cs");
         Assert.DoesNotContain("namespace ", sampleFile.SourceText);
-        Assert.Contains("public static partial class GlobalArgumentHandling", sampleFile.SourceText);
+        Assert.Contains("public static partial class GlobalArgumentProcessor", sampleFile.SourceText);
         Assert.Contains("public static void Sample()", sampleFile.SourceText);
     }
 
@@ -161,7 +161,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class GenericHandler<T>
             {
             }
@@ -186,7 +186,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class MultiGenericHandler<TKey, TValue>
             {
             }
@@ -210,7 +210,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace App1;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class HandlerOne
             {
             }
@@ -221,7 +221,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace App2;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class HandlerTwo
             {
             }
@@ -243,7 +243,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class SplitHandler
             {
                 public static void PartOne() {}
@@ -255,7 +255,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public static partial class SplitHandler
             {
                 public static void PartTwo() {}
@@ -278,7 +278,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandlingAttribute]
+            [ArgumentProcessorAttribute]
             public partial class NonStaticClass
             {
             }
@@ -298,7 +298,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandlingAttribute]
+            [ArgumentProcessorAttribute]
             public static class NonPartialClass
             {
             }
@@ -355,13 +355,13 @@ public sealed class ConsoleArgumentSourceGeneratorTests
 
             namespace TestApp;
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public struct StructCandidate {}
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public interface IInterfaceCandidate {}
 
-            [ArgumentHandling]
+            [ArgumentProcessor]
             public enum EnumCandidate { Value }
             """;
 

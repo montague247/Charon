@@ -6,7 +6,7 @@ internal static class Templates
 {
     private static readonly Assembly Assembly = typeof(Templates).Assembly;
 
-    public static string ArgumentHandlingAttribute { get; } = Read("Templates.ArgumentHandlingAttribute.cs");
+    public static string ArgumentProcessorAttribute { get; } = Read("Templates.ArgumentProcessorAttribute.cs");
 
     public static string ArgumentHandlerAttribute { get; } = Read("Templates.ArgumentHandlerAttribute.cs");
 

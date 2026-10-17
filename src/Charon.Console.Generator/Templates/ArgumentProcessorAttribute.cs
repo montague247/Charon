@@ -5,13 +5,13 @@ using System;
 namespace Charon.Console;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-public sealed class ArgumentHandlingAttribute : Attribute
+public sealed class ArgumentProcessorAttribute : Attribute
 {
-    public ArgumentHandlingAttribute()
+    public ArgumentProcessorAttribute()
     {
     }
 
-    public ArgumentHandlingAttribute(string? description)
+    public ArgumentProcessorAttribute(string? description)
     {
         Description = description;
     }

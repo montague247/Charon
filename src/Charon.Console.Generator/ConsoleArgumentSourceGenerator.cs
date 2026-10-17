@@ -10,7 +10,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
     {
         context.RegisterPostInitializationOutput(ctx =>
         {
-            ctx.AddSource($"{nameof(Templates.ArgumentHandlingAttribute)}.g.cs", Templates.ArgumentHandlingAttribute);
+            ctx.AddSource($"{nameof(Templates.ArgumentProcessorAttribute)}.g.cs", Templates.ArgumentProcessorAttribute);
         });
 
         var candidateClasses = context.SyntaxProvider
@@ -65,7 +65,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         if (symbol.TypeKind != TypeKind.Class || !symbol.IsStatic)
             return null;
 
-        if (!HasArgumentHandlingAttribute(symbol))
+        if (!HasArgumentProcessorAttribute(symbol))
             return null;
 
         var accessibility = symbol.DeclaredAccessibility switch
@@ -89,7 +89,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         );
     }
 
-    private static bool HasArgumentHandlingAttribute(INamedTypeSymbol symbol)
+    private static bool HasArgumentProcessorAttribute(INamedTypeSymbol symbol)
     {
         foreach (var attribute in symbol.GetAttributes())
         {
@@ -98,9 +98,9 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
             if (attrClass is null)
                 continue;
 
-            if (attrClass.Name == "ArgumentHandlingAttribute" ||
-                attrClass.Name == "ArgumentHandling" ||
-                attrClass.ToDisplayString() == "Charon.Console.ArgumentHandlingAttribute")
+            if (attrClass.Name == "ArgumentProcessorAttribute" ||
+                attrClass.Name == "ArgumentProcessor" ||
+                attrClass.ToDisplayString() == "Charon.Console.ArgumentProcessorAttribute")
             {
                 return true;
             }
