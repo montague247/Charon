@@ -25,14 +25,12 @@ jobs:
         run: dotnet restore ./src/Charon.Api/Charon.Api.csproj
       - name: Build Backend
         run: dotnet build ./src/Charon.Api/Charon.Api.csproj --configuration Release --no-restore
-      # - name: Test Backend
-      #   run: dotnet test ./src/tests --no-build --verbosity normal
 
       # Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       # Install + Build Frontend
       - name: Install Frontend
