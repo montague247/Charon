@@ -58,8 +58,8 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
     private static ClassModel? GetClassModel(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
         var classDeclaration = (ClassDeclarationSyntax)context.Node;
-        var symbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) as INamedTypeSymbol;
-        if (symbol is null)
+
+        if (context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) is not INamedTypeSymbol symbol)
             return null;
 
         if (symbol.TypeKind != TypeKind.Class || !symbol.IsStatic)
@@ -94,6 +94,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         foreach (var attribute in symbol.GetAttributes())
         {
             var attrClass = attribute.AttributeClass;
+            
             if (attrClass is null)
                 continue;
 
