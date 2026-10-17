@@ -6,12 +6,9 @@ namespace Charon.Security;
 
 public static partial class SecureEncrypt
 {
-    private static readonly SecurityLevel[] _levels =
+    public static readonly SecurityLevel[] Levels =
     [
-            new SecurityLevel5(),
-            new SecurityLevel4(),
-            new SecurityLevel3(),
-            new SecurityLevel2()
+            new SecurityLevel5()
     ];
 
     public static IPrivateKeyRetriever? PrivateKeyRetriever { get; set; }
@@ -23,13 +20,13 @@ public static partial class SecureEncrypt
         if (string.IsNullOrEmpty(value))
             return false;
 
-        return _levels.Any(s => s.Match(value));
+        return Levels.Any(s => s.Match(value));
     }
 
     public static bool IsSecureEncrypted(this string? value)
     {
         return !string.IsNullOrEmpty(value) &&
-            _levels[0].Match(value);
+            Levels[0].Match(value);
     }
 
     public static string Encrypt(string value, string? stage)
@@ -46,7 +43,7 @@ public static partial class SecureEncrypt
         if (key == null)
             return value;
 
-        return _levels[0].Encrypt(value, key);
+        return Levels[0].Encrypt(value, key);
     }
 
     public static string Decrypt(string value)
@@ -71,7 +68,7 @@ public static partial class SecureEncrypt
         if (key == null)
             return value;
 
-        var level = _levels.First(l => l.Match(value));
+        var level = Levels.First(l => l.Match(value));
         var hash = retriever.GetHash();
 
         return level.Decrypt(value, key, hash);

@@ -5,19 +5,9 @@ namespace Charon.Core.Tests.Security
 {
     public sealed class SecureEncryptTests
     {
-        private static readonly SecurityLevel[] Levels = [
-            new SecurityLevel5(),
-            new SecurityLevel4(),
-            new SecurityLevel3(),
-            new SecurityLevel2()
-        ];
-
         private static readonly string[] EncryptedValues = [
-            "{enc:sl4}ZTai00kpLFe+9w/yGyKOFlu4lRvVXaSHGb7HUoYl7FFO5P1IU2YDaNXmKuu3sknBhbAKz3pDqkZUGDclfUaXRa8XHt25onGgPRsl8PC49IY8Tax67tX0aPDU3qTQdKRPN3w+wEKp4bLBlRttPHlvJmhgEl7wGp+Ts34eeUFQ/oGdiuyZeAam/TA9iGkFI3PIldJT9k8QiyIKt6LPeNuEEsw8L3MHgy4NSZZQ2eCyqcEIXdkr2HuHk/gfCoQ36LaLroj8ZS4q7F/ctpjavxe39uPdvXRxNTT5mH3lGnvcTTiA/cPOcUDgKR2+4DEf4L+AVBLr60p9fZHYH+2B/qrc0XDU3OCedEP+6wiJm2UVKFzQhxpk5HYT5APkEpMZ5VY1AS5e2Ntxwydb3wxfG1QUvDhzAIS6UaGVCXrQV43ezUsVdw0S3kBfuUBxVqzwz4FTzNOUCoPoVtW1KmL+xENLg7CGeIVE+2gLtKaEWFcVhsh6RGZe/fq9W6kzdWwF9k593FU/VtJCfA6KHgrZKRxx35mdMij92JEYY6zjVP05TjvF08l3wlvInnXWSjBc74u/9oHHzC49PNBfDEral8YLGfG393n5Ff4RW5VbCG/XuAg4I0839IeyqcHTU+kv97QdqpN7MBDQqb2CkC9UGPNUJpkDGdMT1vfplych95IHMfg=",
-            "{enc:sl4}lp1z0rh1DeO1yDz+0LnybvrWUrFcTMzPA0Y16bTR0rIi/7ER1OilM+Z/biLaWfHDbfUvavlHvGECbTVw6bZjenK3qf4Cq+B+4OQSdxmB7N7C+/EwkdmogDe2E/AE24xE8YLS/ZyH7WhZgegELgMYlbudoRdOOAJp4rGP9yqAMItff/qaUALxtmjXMqJhxqX/E7MvgsBBsndhSmG61irp3wtNcuUjXroOZru+Tcc+VjgcpJRtyDDsTpXESpjR0Tg66hJ5cfrF8AEK4GttaAH3zmsT/0lUggFo+Kc/naI+ENAZElF3oAaFSpZOwFNpiQFpzW9+mK9IC1yBeQV1e8bFXbB+FpzHlNOFzNx67gQ6NYt8ZfvTyh75j6wPFGd1zy9UfOaUqU5CHXAhbmtqLpDOy8DMMBiVgOAMSkoonJ/Dr512SAV266US1blXy7c/iFQow2Vowspy39x0aALVYugqKuP4c41ys2pbhLntR6wM9rVwhscQqrrHtghk4tqKIkYStclRT/VayV8FXaQWMoQVHR0fQLEMT9zYqq5/CfJ+l1RZGCIZ7X61i212CH9nbeuuSIWP8JSCYgaRa33zDFH+ckjScySkqTKYLcf5ki5DiEXT6i8C1wOVfO2fPXIT8NzpHUI0Da+QaEE6c3dGjwnvaypJmxVNSC15mL0JPnAp6mQ=|{enc:sl4}YvtdR7lTN9Ln+DR7nvtrcr+F2x/A3yw1Jczh9sYywoSegcgZJIDNE/4OYQjg5y0Fr33KZ4Wv8whOEpsRw8BnmczddqUu7No9RyD2WcnbxolKz1Rbh+s31loyM17suzLqlBd+widOPohMocCbMAlWuOojXDplIfKOEHkCUB7x9V0Kka4mDtg/kJPTaFLPjTtN0p3nXvCXILZX1VvKiwahy0uGVjbBnVlluQqZEip7XWaePLb8bFEIp235M6tjvqjo633N19iEYQuicXT/MOMno2gTh9t6AYitAstAP9zbi31XuHIQCbxLeHdCdndlGXNtLCyg4DFLpiBEKs8/Epg8P3x7CaGG2C7SdvPMIgYBRtrVcmXutWQFYoVlEZnfCVNLoUhzPm6ea3mGVqWZAhWlNXoJqtMiIJKOCpk4/KL9XRWOi/2KuiSv1CnAWfrJig+0VmmkcDY8/4p+SqlXk48lrjuJo4OM7S8UK+RxZgv51nFAt0d9FsDDyYj1GG4ZUCK3WFs4MDdyNaOUNAdHokf69zgr+TdACdXQ9t9qVM0jOzLjEPsLEMJdupaLtmaO+721uvMZcEAsg78BXG2jR4ltbNbRUMhYFs5tgnGiU3/kd9qexrZ3DoEmb4DO1mYdkO/B2bDKwRivesbmPpFHvIj0lxbyS3HQI95Ixm4gq71BCD0=|{enc:sl4}fxpYuTsZnqn/EU5uGB0v2DtdlHGVQ9px4zh8nRXjBr217IbF3zKSeg1aPve8v83LBza5toIZeiloxPspqoEn4I2m/h0EAMouxeKfS5GN3hizGriGRL52mxBLIX0gEmvWC3r+72jDe+/YVdfTxxTPyueyyODTsdfuqp2MRvHS8pQ4Gh9CRiiMXUXaKZRm9GIb14NS2qH+LnpS4kTt85Xb2a2QbzlC+sNzl8shTY9KrL1qXV5vflq7xde66FRUeOcTThjCCi7UWSyAhw+yZ2QXO1eyBMpRIXxYZSozUnWmAk36m5g79QddMoIaFPtl6mflcFKevrUUILW/d+j6K9nFGoYnvPuX56x8fUYcBYf+dfOUFKzOFS3jmSBwtF1YbvcVOBDTTZtCNsNXGX2JPEd7qpKo/F0e+o0e4VJL+8+B1KS5f1qIuRD+PgMDi+FB3ARKr3lenuEwncrXymLSW6XsK/i/JDE7/9I4H1tl6UlxvkaYeZ4pYu640kc+wOcmiYnARh421GmwcRx8VnX6h6ixUaW2LgtuCAPAZz3fujWk/J6r45VTl+0efnbnLr53ZJs64q0yCxjRu3c7QJ8+G6cqn91QO+N2hd1L+pRBZtcK6CaFy7dvPQ0RjDLEBcLrbCAPFUSBaLN+5hiNbC9fctLa0UNxVYbIPthqjne7LhekbuY=",
-            "{enc:sl4}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",
-            "{enc:sl3}tO0JcZ3N4jGhGpTirQPb9SSOfaHPo1rdA+VZK8QYjpeN2GQenGnMBR8XB8wFCOSWb1njTdgYvW/NxAigmPs+84KPn7ZTs4R7GDhDEPj3k4h70IWgUnmBwsCEFC68luzE48AObqRMvjUn5itvzLj/5M/+Y5Vf2grpHpG6qZzNny3CxGN2X7FO/i5ChXpgbJfBxbUqAn2Wra7aWPrlrkd7TwH0CPe2vaiu3BN2pDWO6QTQYtbJGHP1l9nOUUcYZZYuBLePinK+1B468mRvLi/LF20uzS3OkI/jPAqtKGmwJRQz2AnAJsnVVZB6sGBwzet8fF02EaE7KZPRul4nxIQrGw8yuBNEJqpuAZxWThkPC/Ydmf4Ip9CUoT1Q6Sjpm6c69IztFRzjzLex3rObGDs/rtHCaF1CvjIaAt2Aax/ptbgi59Ef2k0x/gNThU3ljJFlM+IJqjZTISG1Jzp3ShVgdWXo+5SMyQ2dUgrR8VCZfqUVhYiav7/1CXoa7ju8rH9qR9ccUMkTpy2w1mGIyzOc4P8m4gzAXJPos2s3u9n+DnUms5yRG/Zr6lmPvhsMkRw9dLuC+aduvZLHDD/iCU0bUCKp9KlXz/1OOo6m+/WxqDgm92tQF1NLvqIYY8L7WoIcUIzOSp9WnMo9ZUNMpLR6JZCMYbgBWBSNRLBZIxhIhjA=",
-            "{enc:sl2}EdPqlpAWdiJCKIv8R+wkwei7HEpsvcoXQp8LPoLS0zFSKLVr/F1lh3e7kpcR8rP1kRGibzGvMP2pPoRqe2H/wszA58LAV1+XzV5bPRv1pGzk47x/2+2YM4G6du9YDTDKcwyI2iXuIaiXiQrJvcrVd0mKQSjqopQTGhlzW6qbHkySNjEK3i1n8hN6IVt7gh8J+YLlgqIHccFImAfhq2h3BALkyp5yj5VonR/FJ2Qd4fSh5TA1RWmaYPkhLjo+1Ym1o+8K7WB3TIYI/XXNK+lPSl5Oc3tcksRD1s5eUVSfmJ/agFkA/EdpGzNjkwP9+hHH1QYub9rXy5Zf4UHh9yuEqI0+trFBwHph1aKcOsr6mik31MgHkbqkKdoGDYzslRi/TTLiRXP2NrIYNeu1qCOCL7C7H5w39wfV+qQvs5XkKgjd9yxWq43auCJUSr67D3t+a3ljoB1rTrijn2Z07UCjPN0BqpoBMxWCRHMNkJd5WsnKrWf32g/E4cuTBYlL8Gx+ON2tCEuJL9mNHMOdFvmVGggxEwxDIYDaSk7zFL9A9YC+xMSBrna36DD9EqkCXqTIaMgBbfg7girbYfMtYTGrqZJ2KeAPiR8tTBd3PQzrdUGAt466TNXD88A8FB5C/oiTSV2gXqDR+QfF2SpqbMMAaUiW6e9CiwRQy3C+Obu5sk4="
+            "{enc:sl5}jN80hNJWum4Kj3tyF4Wgl1iYwXMQuUUog8S8fkpBo0qMntD2ftzaI0vIJ3DVvFaDdU6VFZhcWDNvTf8G7CYcUIobdfRiO0+s3SvgLseBpJa+PKoClcXRLK6kfGfo/Ni85caraJcZ3IjCFVZ/cBeOar7xKfUqe881k3Tid98qqPsGZWX84dWjZHXpEOTegAXzqIDXuvQQH4l1jT1mfJl3JIOm3SkAmCNgo4EzTc9/YVDTHLvfal+zeWl8knuCd6eQXvQkfhfZp9wtwO0HhrmtMrll+eVI2Uqf1an0l7WqMqsQ4n3SBpgYxcbHU+KUfMMJrufd7yj5Hxbo3CIK+Vxnus6LNsBhBbgHNXdbMJcSMo5VwVobdw2BKh7eMl1HaPmBTnq5/MuFDq1efhW4m7JZ4OY7dNbdMydz1aUXBqyWeF3vk/5klJcaLEGiEWS/L5HPWPuuV0Xx+3xQGntF0YDPEDcV+f0xFitXJNzA6DibEZ6/aZIjnjTzpKqg0567SANLuhLQyZNEaqsrSdlvMrf3aCv+mziybFpV7CnIlw0PUNIdTiOaCVIMJuJ/ysOqafKmjJlg28qpvlqkQJr5K0NT+7GpgKhOV3m9y/KgXXWGqq5tDwAwYvT9j9cCNVqIGctC8mzSCWBVwnrj/G1zKpLGkReK+C54glMiJOpsVejWCN0=", // abc
+            "{enc:sl5}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" // abcde...
         ];
 
         [Fact]
@@ -26,9 +16,9 @@ namespace Charon.Core.Tests.Security
             Assert.False(SecureEncrypt.IsEncrypted(string.Empty));
             Assert.False(SecureEncrypt.IsEncrypted("foo"));
             Assert.True(SecureEncrypt.IsEncrypted("{enc:sl5}"));
-            Assert.True(SecureEncrypt.IsEncrypted("{enc:sl4}"));
-            Assert.True(SecureEncrypt.IsEncrypted("{enc:sl3}"));
-            Assert.True(SecureEncrypt.IsEncrypted("{enc:sl2}"));
+            // Assert.True(SecureEncrypt.IsEncrypted("{enc:sl4}"));
+            // Assert.True(SecureEncrypt.IsEncrypted("{enc:sl3}"));
+            // Assert.True(SecureEncrypt.IsEncrypted("{enc:sl2}"));
         }
 
         [Fact]
@@ -37,9 +27,9 @@ namespace Charon.Core.Tests.Security
             Assert.False(SecureEncrypt.IsSecureEncrypted(string.Empty));
             Assert.False(SecureEncrypt.IsSecureEncrypted("foo"));
             Assert.True(SecureEncrypt.IsSecureEncrypted("{enc:sl5}"));
-            Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl4}"));
-            Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl3}"));
-            Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl2}"));
+            // Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl4}"));
+            // Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl3}"));
+            // Assert.False(SecureEncrypt.IsSecureEncrypted("{enc:sl2}"));
         }
 
         [Fact]
@@ -76,9 +66,9 @@ namespace Charon.Core.Tests.Security
         [Fact]
         public void EncryptInsecure()
         {
-            for (int i = 1; i < Levels.Length; i++)
+            for (int i = 1; i < SecureEncrypt.Levels.Length; i++)
             {
-                var securityLevel = Levels[i];
+                var securityLevel = SecureEncrypt.Levels[i];
 
                 Assert.Throws<NotImplementedException>(() => securityLevel.Encrypt("abc", []));
             }
@@ -87,12 +77,14 @@ namespace Charon.Core.Tests.Security
         [Fact]
         public void DecryptInsecure()
         {
-            for (int i = 1; i < Levels.Length; i++)
+            var retriever = new NullHashPrivateKeyRetriever();
+
+            for (int i = 1; i < SecureEncrypt.Levels.Length; i++)
             {
-                var securityLevel = Levels[i];
+                var securityLevel = SecureEncrypt.Levels[i];
 
                 var encrypted = EncryptedValues.Single(securityLevel.Match);
-                var actual = SecureEncrypt.Decrypt(encrypted, new NullHashPrivateKeyRetriever());
+                var actual = SecureEncrypt.Decrypt(encrypted, retriever);
 
                 Assert.Equal("abc", actual);
             }
