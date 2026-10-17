@@ -5,7 +5,28 @@
 
 version: 2
 updates:
+  # Enable version updates for NuGet
   - package-ecosystem: "nuget"
-    directory: "/src"
+    directories:
+      - "/src/**/*"
+      - "/tests/**/*"
     schedule:
       interval: "daily"
+
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Enable version updates for Dockerfiles
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
