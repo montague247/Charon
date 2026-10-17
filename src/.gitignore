@@ -1,5 +1,6 @@
-localenv-*.json
+/localenv-*.json
+/NuGet.Config
+**/.nuget
 **/bin
 **/obj
 **/*.user
-/NuGet.Config
