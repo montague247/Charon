@@ -86,15 +86,17 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
 
     private static void GenerateSource(SourceProductionContext context, ClassModel classModel)
     {
-        string source = $$"""
+        string source = $$""""
 {{classModel.Accessibility}}static partial class {{classModel.Name}}{{classModel.TypeParameters}}
 {
     public static void Sample()
     {
-        global::System.Console.WriteLine($$\"\"\"{{Banner.Create("Sample")}}\"\"\");
+        global::System.Console.WriteLine("""
+{{Banner.Create("Sample")}}
+""");
     }
 }
-""";
+"""";
 
         context.AddSource(classModel, source, ".Sample.g.cs");
     }
