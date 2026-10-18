@@ -91,7 +91,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
 {
     public static void Sample()
     {
-        global::System.Console.WriteLine("Sample");
+        global::System.Console.WriteLine($$\"\"\"{{Banner.Create("Sample")}}\"\"\");
     }
 }
 """;
