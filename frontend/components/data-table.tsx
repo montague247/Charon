@@ -38,7 +38,7 @@ export const dataTableFeatures = tableFeatures({
 export type DataTableFeatures = typeof dataTableFeatures
 
 interface DataTableProps<TData extends RowData> {
-    columns: ColumnDef<DataTableFeatures, TData, any>[]
+    columns: ColumnDef<DataTableFeatures, TData>[]
     data: TData[]
 }
 

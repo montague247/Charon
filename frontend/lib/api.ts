@@ -6,7 +6,7 @@ const api = axios.create({
     baseURL: "https://68e3c58a8e14f4523dae9daf.mockapi.io/api/latest/", // .NET API
 });
 
-api.interceptors.request.use(async (config: InternalAxiosRequestConfig<any>) => {
+api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     const session = await getSession() as ExtendedSession | null;
 
     if (session?.accessToken) {
