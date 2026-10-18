@@ -1,6 +1,7 @@
 .vs
 **/.DS_Store
 **/.local
+**/.nuget
 /_backup
 /publish
 /Library
