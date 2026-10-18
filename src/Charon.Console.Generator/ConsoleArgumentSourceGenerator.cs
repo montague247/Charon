@@ -1,5 +1,5 @@
 using Charon.Generator;
-using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Charon.Console;
 
@@ -13,88 +13,63 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
             ctx.AddSource($"{nameof(Templates.ArgumentProcessorAttribute)}.g.cs", Templates.ArgumentProcessorAttribute);
         });
 
-        var candidateClasses = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                predicate: static (node, _) => IsCandidateClass(node),
-                transform: static (ctx, ct) => GetClassModel(ctx, ct))
-            .Where(static m => m is not null);
+        var classModelProvider = context.CompilationProvider
+            .Combine(context.AnalyzerConfigOptionsProvider)
+            .Select(static (tuple, _) => GetClassModel(tuple.Left, tuple.Right));
 
-        context.RegisterSourceOutput(candidateClasses.Collect(), static (spc, classes) =>
+        context.RegisterSourceOutput(classModelProvider, static (spc, classModel) =>
         {
-            var seen = new HashSet<string>();
+            if (classModel is null)
+                return;
 
-            foreach (var classModel in classes)
-            {
-                if (classModel is null)
-                    continue;
+            GenerateSource(spc, classModel);
 
-                var key = string.IsNullOrEmpty(classModel.Namespace)
-                    ? classModel.Name
-                    : $"{classModel.Namespace}.{classModel.Name}";
-
-                if (!seen.Add(key))
-                    continue;
-
-                GenerateSource(spc, classModel);
-            }
-
-            if (seen.Count != 0)
-            {
-                spc.AddSource($"{nameof(Templates.ArgumentHandlerAttribute)}.g.cs", Templates.ArgumentHandlerAttribute);
-                spc.AddSource($"{nameof(Templates.IArgumentHandler)}.g.cs", Templates.IArgumentHandler);
-                spc.AddSource($"{nameof(Templates.IGlobalOptions)}.g.cs", Templates.IGlobalOptions);
-            }
+            spc.AddSource($"{nameof(Templates.ArgumentHandlerAttribute)}.g.cs", Templates.ArgumentHandlerAttribute);
+            spc.AddSource($"{nameof(Templates.IArgumentHandler)}.g.cs", Templates.IArgumentHandler);
+            spc.AddSource($"{nameof(Templates.IGlobalOptions)}.g.cs", Templates.IGlobalOptions);
         });
     }
 
-    private static bool IsCandidateClass(SyntaxNode node)
+    private static ClassModel? GetClassModel(Compilation compilation, AnalyzerConfigOptionsProvider options)
     {
-        return node is ClassDeclarationSyntax classDeclaration
-            && classDeclaration.AttributeLists.Count > 0
-            && classDeclaration.Modifiers.Any(static m => m.IsKind(SyntaxKind.StaticKeyword))
-            && classDeclaration.Modifiers.Any(static m => m.IsKind(SyntaxKind.PartialKeyword));
-    }
-
-    private static ClassModel? GetClassModel(GeneratorSyntaxContext context, CancellationToken cancellationToken)
-    {
-        var classDeclaration = (ClassDeclarationSyntax)context.Node;
-
-        if (context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken) is not INamedTypeSymbol symbol)
+        var attribute = GetArgumentProcessorAttribute(compilation.Assembly);
+        if (attribute is null)
             return null;
 
-        if (symbol.TypeKind != TypeKind.Class || !symbol.IsStatic)
-            return null;
+        var name = "ArgumentProcessor";
 
-        if (!HasArgumentProcessorAttribute(symbol))
-            return null;
-
-        var accessibility = symbol.DeclaredAccessibility switch
+        if (attribute.ConstructorArguments.Length >= 2 &&
+            attribute.ConstructorArguments[1].Value is string customName &&
+            !string.IsNullOrWhiteSpace(customName))
         {
-            Accessibility.Public => "public ",
-            Accessibility.Internal => "internal ",
-            _ => ""
-        };
+            name = customName;
+        }
 
-        var typeParameters = symbol.TypeParameters.Length > 0
-            ? $"<{string.Join(", ", symbol.TypeParameters.Select(p => p.Name))}>"
-            : string.Empty;
-
-        var ns = symbol.ContainingNamespace.IsGlobalNamespace ? null : symbol.ContainingNamespace.ToDisplayString();
+        string? ns = null;
+        if (options.GlobalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace) &&
+            !string.IsNullOrWhiteSpace(rootNamespace))
+        {
+            ns = rootNamespace;
+        }
+        else if (!string.IsNullOrWhiteSpace(compilation.AssemblyName))
+        {
+            ns = compilation.AssemblyName;
+        }
 
         return new ClassModel(
-            symbol.Name,
+            name,
             ns,
-            accessibility,
-            typeParameters
+            "public ",
+            string.Empty
         );
     }
 
-    private static bool HasArgumentProcessorAttribute(INamedTypeSymbol symbol)
+    private static AttributeData? GetArgumentProcessorAttribute(IAssemblySymbol assembly)
     {
-        foreach (var attribute in symbol.GetAttributes())
+        foreach (var attribute in assembly.GetAttributes())
         {
             var attrClass = attribute.AttributeClass;
-            
+
             if (attrClass is null)
                 continue;
 
@@ -102,19 +77,15 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
                 attrClass.Name == "ArgumentProcessor" ||
                 attrClass.ToDisplayString() == "Charon.Console.ArgumentProcessorAttribute")
             {
-                return true;
+                return attribute;
             }
         }
 
-        return false;
+        return null;
     }
 
     private static void GenerateSource(SourceProductionContext context, ClassModel classModel)
     {
-        var hintName = string.IsNullOrEmpty(classModel.Namespace)
-            ? $"{classModel.Name}.Sample.g.cs"
-            : $"{classModel.Namespace}.{classModel.Name}.Sample.g.cs";
-
         string source = $$"""
 {{classModel.Accessibility}}static partial class {{classModel.Name}}{{classModel.TypeParameters}}
 {

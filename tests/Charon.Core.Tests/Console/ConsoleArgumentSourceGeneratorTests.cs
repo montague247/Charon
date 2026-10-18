@@ -20,24 +20,23 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
         var attrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentProcessorAttribute.g.cs");
         Assert.DoesNotContain(outputFiles, f => f.HintName == "ArgumentHandlerAttribute.g.cs");
+        Assert.DoesNotContain(outputFiles, f => f.HintName == "IArgumentHandler.g.cs");
+        Assert.DoesNotContain(outputFiles, f => f.HintName == "IGlobalOptions.g.cs");
+        Assert.Contains("[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]", attrFile.SourceText);
         Assert.Contains("public sealed class ArgumentProcessorAttribute : Attribute", attrFile.SourceText);
         Assert.Contains("public string? Description { get; }", attrFile.SourceText);
+        Assert.Contains("public string Name { get; } = \"ArgumentProcessor\";", attrFile.SourceText);
         Assert.Contains("public bool CaseSensitive { get; set; }", attrFile.SourceText);
         Assert.Contains("public bool AllowUnknownArguments { get; set; }", attrFile.SourceText);
     }
 
     [Fact]
-    public void Generator_GeneratesSampleMethod_ForStaticPartialClassWithAttribute()
+    public void Generator_GeneratesSampleMethod_ForAssemblyWithAttribute()
     {
         const string userSource = """
             using Charon.Console;
 
-            namespace TestApp;
-
-            [ArgumentProcessorAttribute]
-            public static partial class ArgumentProcessor
-            {
-            }
+            [assembly: ArgumentProcessorAttribute]
             """;
 
         var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
@@ -47,6 +46,8 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.Contains(outputFiles, f => f.HintName == "ArgumentProcessorAttribute.g.cs");
         var handlerAttrFile = Assert.Single(outputFiles, f => f.HintName == "ArgumentHandlerAttribute.g.cs");
         Assert.Contains("public sealed class ArgumentHandlerAttribute(string? name, string description) : Attribute", handlerAttrFile.SourceText);
+        Assert.Single(outputFiles, f => f.HintName == "IArgumentHandler.g.cs");
+        Assert.Single(outputFiles, f => f.HintName == "IGlobalOptions.g.cs");
         Assert.Contains(outputFiles, f => f.HintName == "TestApp.ArgumentProcessor.Sample.g.cs");
 
         var sampleFile = outputFiles.First(f => f.HintName == "TestApp.ArgumentProcessor.Sample.g.cs");
@@ -62,12 +63,27 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         const string userSource = """
             using Charon.Console;
 
-            namespace TestApp;
+            [assembly: ArgumentProcessor]
+            """;
 
-            [ArgumentProcessor]
-            public static partial class CliArguments
-            {
-            }
+        var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
+
+        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
+        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
+        Assert.Contains(outputFiles, f => f.HintName == "TestApp.ArgumentProcessor.Sample.g.cs");
+
+        var sampleFile = outputFiles.First(f => f.HintName == "TestApp.ArgumentProcessor.Sample.g.cs");
+        Assert.Contains("public static partial class ArgumentProcessor", sampleFile.SourceText);
+        Assert.Contains("public static void Sample()", sampleFile.SourceText);
+    }
+
+    [Fact]
+    public void Generator_GeneratesSampleMethod_ForCustomName()
+    {
+        const string userSource = """
+            using Charon.Console;
+
+            [assembly: ArgumentProcessor("CLI Parser", "CliArguments")]
             """;
 
         var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
@@ -77,6 +93,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.Contains(outputFiles, f => f.HintName == "TestApp.CliArguments.Sample.g.cs");
 
         var sampleFile = outputFiles.First(f => f.HintName == "TestApp.CliArguments.Sample.g.cs");
+        Assert.Contains("namespace TestApp;", sampleFile.SourceText);
         Assert.Contains("public static partial class CliArguments", sampleFile.SourceText);
         Assert.Contains("public static void Sample()", sampleFile.SourceText);
     }
@@ -85,12 +102,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
     public void Generator_GeneratesSampleMethod_ForFullyQualifiedAttribute()
     {
         const string userSource = """
-            namespace TestApp;
-
-            [Charon.Console.ArgumentProcessorAttribute("CLI Parser", CaseSensitive = true)]
-            public static partial class FullyQualifiedArgs
-            {
-            }
+            [assembly: Charon.Console.ArgumentProcessorAttribute("CLI Parser", "FullyQualifiedArgs", CaseSensitive = true)]
             """;
 
         var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
@@ -105,43 +117,15 @@ public sealed class ConsoleArgumentSourceGeneratorTests
     }
 
     [Fact]
-    public void Generator_GeneratesSampleMethod_ForInternalStaticPartialClass()
+    public void Generator_GeneratesSampleMethod_ForGlobalNamespaceWhenAssemblyNameIsNull()
     {
         const string userSource = """
             using Charon.Console;
 
-            namespace TestApp;
-
-            [ArgumentProcessor]
-            internal static partial class InternalHandler
-            {
-            }
+            [assembly: ArgumentProcessor("CLI Parser", "GlobalArgumentProcessor")]
             """;
 
-        var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Contains(outputFiles, f => f.HintName == "TestApp.InternalHandler.Sample.g.cs");
-
-        var sampleFile = outputFiles.First(f => f.HintName == "TestApp.InternalHandler.Sample.g.cs");
-        Assert.Contains("internal static partial class InternalHandler", sampleFile.SourceText);
-        Assert.Contains("public static void Sample()", sampleFile.SourceText);
-    }
-
-    [Fact]
-    public void Generator_GeneratesSampleMethod_ForClassInGlobalNamespace()
-    {
-        const string userSource = """
-            using Charon.Console;
-
-            [ArgumentProcessor]
-            public static partial class GlobalArgumentProcessor
-            {
-            }
-            """;
-
-        var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
+        var (diagnostics, outputFiles, compilation) = RunGeneratorWithAssemblyName(null, userSource);
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
         Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
@@ -154,96 +138,15 @@ public sealed class ConsoleArgumentSourceGeneratorTests
     }
 
     [Fact]
-    public void Generator_GeneratesSampleMethod_ForGenericStaticPartialClass()
-    {
-        const string userSource = """
-            using Charon.Console;
-
-            namespace TestApp;
-
-            [ArgumentProcessor]
-            public static partial class GenericHandler<T>
-            {
-            }
-            """;
-
-        var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Contains(outputFiles, f => f.HintName == "TestApp.GenericHandler.Sample.g.cs");
-
-        var sampleFile = outputFiles.First(f => f.HintName == "TestApp.GenericHandler.Sample.g.cs");
-        Assert.Contains("public static partial class GenericHandler<T>", sampleFile.SourceText);
-        Assert.Contains("public static void Sample()", sampleFile.SourceText);
-    }
-
-    [Fact]
-    public void Generator_GeneratesSampleMethod_ForMultipleTypeParameters()
-    {
-        const string userSource = """
-            using Charon.Console;
-
-            namespace TestApp;
-
-            [ArgumentProcessor]
-            public static partial class MultiGenericHandler<TKey, TValue>
-            {
-            }
-            """;
-
-        var (diagnostics, outputFiles, compilation) = RunGenerator(userSource);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Contains(outputFiles, f => f.HintName == "TestApp.MultiGenericHandler.Sample.g.cs");
-
-        var sampleFile = outputFiles.First(f => f.HintName == "TestApp.MultiGenericHandler.Sample.g.cs");
-        Assert.Contains("public static partial class MultiGenericHandler<TKey, TValue>", sampleFile.SourceText);
-    }
-
-    [Fact]
-    public void Generator_GeneratesForMultipleCandidateClasses()
-    {
-        const string userSource1 = """
-            using Charon.Console;
-
-            namespace App1;
-
-            [ArgumentProcessor]
-            public static partial class HandlerOne
-            {
-            }
-            """;
-
-        const string userSource2 = """
-            using Charon.Console;
-
-            namespace App2;
-
-            [ArgumentProcessor]
-            public static partial class HandlerTwo
-            {
-            }
-            """;
-
-        var (diagnostics, outputFiles, compilation) = RunGenerator(userSource1, userSource2);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.Contains(outputFiles, f => f.HintName == "App1.HandlerOne.Sample.g.cs");
-        Assert.Contains(outputFiles, f => f.HintName == "App2.HandlerTwo.Sample.g.cs");
-    }
-
-    [Fact]
-    public void Generator_DeduplicatesPartialDeclarationsOfSameClass()
+    public void Generator_MergesWithPartialClassDeclaration()
     {
         const string file1 = """
             using Charon.Console;
 
+            [assembly: ArgumentProcessor("CLI Parser", "SplitHandler")]
+
             namespace TestApp;
 
-            [ArgumentProcessor]
             public static partial class SplitHandler
             {
                 public static void PartOne() {}
@@ -251,67 +154,23 @@ public sealed class ConsoleArgumentSourceGeneratorTests
             """;
 
         const string file2 = """
-            using Charon.Console;
-
             namespace TestApp;
 
-            [ArgumentProcessor]
             public static partial class SplitHandler
             {
-                public static void PartTwo() {}
+                public static void PartTwo() => Sample();
             }
             """;
 
         var (diagnostics, outputFiles, compilation) = RunGenerator(file1, file2);
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        // CS0579 is the C# compiler error for duplicate attribute on partial parts, but the generator deduplicates without error
-        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error && d.Id != "CS0579"));
+        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
         Assert.Single(outputFiles, f => f.HintName == "TestApp.SplitHandler.Sample.g.cs");
     }
 
     [Fact]
-    public void Generator_IgnoresNonStaticClass()
-    {
-        const string userSource = """
-            using Charon.Console;
-
-            namespace TestApp;
-
-            [ArgumentProcessorAttribute]
-            public partial class NonStaticClass
-            {
-            }
-            """;
-
-        var (diagnostics, outputFiles, _) = RunGenerator(userSource);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.DoesNotContain(outputFiles, f => f.HintName.Contains("NonStaticClass"));
-    }
-
-    [Fact]
-    public void Generator_IgnoresNonPartialClass()
-    {
-        const string userSource = """
-            using Charon.Console;
-
-            namespace TestApp;
-
-            [ArgumentProcessorAttribute]
-            public static class NonPartialClass
-            {
-            }
-            """;
-
-        var (diagnostics, outputFiles, _) = RunGenerator(userSource);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.DoesNotContain(outputFiles, f => f.HintName.Contains("NonPartialClass"));
-    }
-
-    [Fact]
-    public void Generator_IgnoresClassWithoutAttribute()
+    public void Generator_IgnoresAssemblyWithoutAttribute()
     {
         const string userSource = """
             namespace TestApp;
@@ -324,18 +183,19 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         var (diagnostics, outputFiles, _) = RunGenerator(userSource);
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.DoesNotContain(outputFiles, f => f.HintName.Contains("NoAttributeClass"));
+        Assert.DoesNotContain(outputFiles, f => f.HintName.EndsWith(".Sample.g.cs"));
     }
 
     [Fact]
-    public void Generator_IgnoresClassWithUnrelatedAttribute()
+    public void Generator_IgnoresAssemblyWithUnrelatedAttribute()
     {
         const string userSource = """
-            using System;
+            using System.Reflection;
+
+            [assembly: AssemblyDescription("Unrelated")]
 
             namespace TestApp;
 
-            [Obsolete]
             public static partial class UnrelatedAttributeClass
             {
             }
@@ -344,34 +204,13 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         var (diagnostics, outputFiles, _) = RunGenerator(userSource);
 
         Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.DoesNotContain(outputFiles, f => f.HintName.Contains("UnrelatedAttributeClass"));
-    }
-
-    [Fact]
-    public void Generator_IgnoresStructInterfaceAndEnum()
-    {
-        const string userSource = """
-            using Charon.Console;
-
-            namespace TestApp;
-
-            [ArgumentProcessor]
-            public struct StructCandidate {}
-
-            [ArgumentProcessor]
-            public interface IInterfaceCandidate {}
-
-            [ArgumentProcessor]
-            public enum EnumCandidate { Value }
-            """;
-
-        var (diagnostics, outputFiles, _) = RunGenerator(userSource);
-
-        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-        Assert.DoesNotContain(outputFiles, f => f.HintName.Contains("Candidate"));
+        Assert.DoesNotContain(outputFiles, f => f.HintName.EndsWith(".Sample.g.cs"));
     }
 
     private static (ImmutableArray<Diagnostic> Diagnostics, ImmutableArray<(string HintName, string SourceText)> OutputFiles, Compilation OutputCompilation) RunGenerator(params string[] sources)
+        => RunGeneratorWithAssemblyName("TestApp", sources);
+
+    private static (ImmutableArray<Diagnostic> Diagnostics, ImmutableArray<(string HintName, string SourceText)> OutputFiles, Compilation OutputCompilation) RunGeneratorWithAssemblyName(string? assemblyName, params string[] sources)
     {
         var syntaxTrees = sources.Select(s => CSharpSyntaxTree.ParseText(s)).ToArray();
         var assemblies = global::System.AppDomain.CurrentDomain.GetAssemblies()
@@ -388,7 +227,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
             .ToArray();
 
         var compilation = CSharpCompilation.Create(
-            "TestCompilation",
+            assemblyName,
             syntaxTrees,
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
