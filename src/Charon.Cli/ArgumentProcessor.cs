@@ -1,1 +1,1 @@
-[assembly: ArgumentProcessor]
+[assembly: Charon.Console.ArgumentProcessor]
