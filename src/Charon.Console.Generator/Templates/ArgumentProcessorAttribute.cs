@@ -11,13 +11,13 @@ public sealed class ArgumentProcessorAttribute : Attribute
     {
     }
 
-    public ArgumentProcessorAttribute(string? description, string name = "ArgumentProcessor")
+    public ArgumentProcessorAttribute(string? application, string name = "ArgumentProcessor")
     {
-        Description = description;
+        Application = application;
         Name = name;
     }
 
-    public string? Description { get; }
+    public string? Application { get; }
 
     public string Name { get; } = "ArgumentProcessor";
 

@@ -1,6 +1,6 @@
 namespace Charon.Generator;
 
-public sealed class ClassModel: IEquatable<ClassModel>
+public class ClassModel : IEquatable<ClassModel>
     {
         public string Name { get; }
         public string? Namespace { get; }

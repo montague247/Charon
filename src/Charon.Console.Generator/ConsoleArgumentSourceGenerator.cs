@@ -30,7 +30,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         });
     }
 
-    private static ClassModel? GetClassModel(Compilation compilation, AnalyzerConfigOptionsProvider options)
+    private static ArgumentProcessorModel? GetClassModel(Compilation compilation, AnalyzerConfigOptionsProvider options)
     {
         var attribute = GetArgumentProcessorAttribute(compilation.Assembly);
         if (attribute is null)
@@ -56,12 +56,35 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
             ns = compilation.AssemblyName;
         }
 
-        return new ClassModel(
+        var application = GetApplicationName(attribute, ns, name);
+
+        return new ArgumentProcessorModel(
             name,
             ns,
             "public ",
-            string.Empty
+            string.Empty,
+            application
         );
+    }
+
+    private static string GetApplicationName(AttributeData attribute, string? ns, string fallbackName)
+    {
+        if (attribute.ConstructorArguments.Length >= 1 &&
+            attribute.ConstructorArguments[0].Value is string customApplication &&
+            !string.IsNullOrWhiteSpace(customApplication))
+        {
+            return customApplication;
+        }
+
+        if (!string.IsNullOrWhiteSpace(ns))
+        {
+            return string.Join(
+                " ",
+                ns!.Split(['.'], StringSplitOptions.RemoveEmptyEntries)
+                    .Select(static part => string.Equals(part, "Cli", StringComparison.OrdinalIgnoreCase) ? "CLI" : part));
+        }
+
+        return fallbackName;
     }
 
     private static AttributeData? GetArgumentProcessorAttribute(IAssemblySymbol assembly)
@@ -84,7 +107,7 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static void GenerateSource(SourceProductionContext context, ClassModel classModel)
+    private static void GenerateSource(SourceProductionContext context, ArgumentProcessorModel classModel)
     {
         string source = $$""""
 {{classModel.Accessibility}}static partial class {{classModel.Name}}{{classModel.TypeParameters}}
@@ -92,12 +115,40 @@ public sealed class ConsoleArgumentSourceGenerator : IIncrementalGenerator
     public static void Sample()
     {
         global::System.Console.WriteLine("""
-{{Banner.Create("Sample")}}
+{{Banner.Create(classModel.Application)}}
 """);
     }
 }
 """";
 
         context.AddSource(classModel, source, ".Sample.g.cs");
+    }
+
+    private sealed class ArgumentProcessorModel(
+        string name,
+        string? @namespace,
+        string accessibility,
+        string typeParameters,
+        string application)
+        : ClassModel(name, @namespace, accessibility, typeParameters), IEquatable<ArgumentProcessorModel>
+    {
+        public string Application { get; } = application;
+
+        public bool Equals(ArgumentProcessorModel? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return base.Equals(other) && Application == other.Application;
+        }
+
+        public override bool Equals(object? obj) => Equals(obj as ArgumentProcessorModel);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (base.GetHashCode() * 397) ^ Application.GetHashCode();
+            }
+        }
     }
 }

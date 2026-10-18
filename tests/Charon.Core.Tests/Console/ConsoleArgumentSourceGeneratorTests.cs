@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using Charon.Console;
+using Charon.Generator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -24,7 +25,7 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.DoesNotContain(outputFiles, f => f.HintName == "IGlobalOptions.g.cs");
         Assert.Contains("[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]", attrFile.SourceText);
         Assert.Contains("public sealed class ArgumentProcessorAttribute : Attribute", attrFile.SourceText);
-        Assert.Contains("public string? Description { get; }", attrFile.SourceText);
+        Assert.Contains("public string? Application { get; }", attrFile.SourceText);
         Assert.Contains("public string Name { get; } = \"ArgumentProcessor\";", attrFile.SourceText);
         Assert.Contains("public bool CaseSensitive { get; set; }", attrFile.SourceText);
         Assert.Contains("public bool AllowUnknownArguments { get; set; }", attrFile.SourceText);
@@ -54,7 +55,35 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.Contains("namespace TestApp;", sampleFile.SourceText);
         Assert.Contains("public static partial class ArgumentProcessor", sampleFile.SourceText);
         Assert.Contains("public static void Sample()", sampleFile.SourceText);
-        Assert.Contains("global::System.Console.WriteLine(\"Sample\");", sampleFile.SourceText);
+        Assert.Contains($$""""
+        global::System.Console.WriteLine("""
+{{Banner.Create("TestApp")}}
+""");
+"""", sampleFile.SourceText);
+    }
+
+    [Fact]
+    public void Generator_GeneratesSampleMethod_UsesFormattedProjectNameWhenApplicationNotSpecified()
+    {
+        const string userSource = """
+            using Charon.Console;
+
+            [assembly: ArgumentProcessor]
+            """;
+
+        var (diagnostics, outputFiles, compilation) = RunGeneratorWithAssemblyName("Charon.Cli", userSource);
+
+        Assert.Empty(diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
+        Assert.Empty(compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error));
+        Assert.Contains(outputFiles, f => f.HintName == "Charon.Cli.ArgumentProcessor.Sample.g.cs");
+
+        var sampleFile = outputFiles.First(f => f.HintName == "Charon.Cli.ArgumentProcessor.Sample.g.cs");
+        Assert.Contains("namespace Charon.Cli;", sampleFile.SourceText);
+        Assert.Contains($$""""
+        global::System.Console.WriteLine("""
+{{Banner.Create("Charon CLI")}}
+""");
+"""", sampleFile.SourceText);
     }
 
     [Fact]
@@ -96,6 +125,11 @@ public sealed class ConsoleArgumentSourceGeneratorTests
         Assert.Contains("namespace TestApp;", sampleFile.SourceText);
         Assert.Contains("public static partial class CliArguments", sampleFile.SourceText);
         Assert.Contains("public static void Sample()", sampleFile.SourceText);
+        Assert.Contains($$""""
+        global::System.Console.WriteLine("""
+{{Banner.Create("CLI Parser")}}
+""");
+"""", sampleFile.SourceText);
     }
 
     [Fact]
