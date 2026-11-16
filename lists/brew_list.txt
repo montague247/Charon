@@ -4,9 +4,10 @@ brotli
 c-ares
 ca-certificates
 fmt
+gh
 hdrhistogram_c
 highway
-icu4c@78
+icu4c@79
 libffi
 libnghttp2
 libuv
