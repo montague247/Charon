@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 5000
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 COPY ["Charon.Api/Charon.Api.csproj", "Charon.Api/"]
 RUN dotnet restore "Charon.Api/Charon.Api.csproj"
